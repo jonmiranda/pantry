@@ -1,6 +1,7 @@
 package net.jonmiranda.pantry;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,14 +86,23 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_main, menu);
+    if (BuildConfig.DEBUG) {
+      getMenuInflater().inflate(R.menu.menu_debug, menu);
+    }
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     int id = item.getItemId();
-    if (id == R.id.action_settings) {
-      return true;
+    switch (id) {
+      case R.id.action_settings:
+        return true;
+      case R.id.delete_realm:
+        storage.delete();
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+        return true;
     }
     return super.onOptionsItemSelected(item);
   }
