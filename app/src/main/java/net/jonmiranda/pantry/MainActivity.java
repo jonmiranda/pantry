@@ -14,8 +14,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import net.jonmiranda.pantry.storage.PantryItem;
+import net.jonmiranda.pantry.storage.Storage;
+
 import java.util.List;
 
 import butterknife.Bind;
@@ -24,15 +25,14 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final String[] ITEMS = new String[] {"Apples", "Bananas", "Carrots"};
-
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
   @Bind(R.id.add_item_view) View addItemView;
   @Bind(R.id.add_item_input) EditText addItemInput;
 
   private InputMethodManager inputMethodManager;
 
-  private List<String> pantryItems;
+  private Storage storage;
+  private List<PantryItem> pantryItems;
   private PantryListAdapter pantryAdapter;
 
   @Override
@@ -42,9 +42,10 @@ public class MainActivity extends AppCompatActivity {
     ButterKnife.bind(this);
 
     inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
-    pantryItems = new ArrayList<>(Arrays.asList(ITEMS));
+
+    storage = new Storage(this);
+    pantryItems = storage.getItems();
     pantryAdapter = new PantryListAdapter(pantryItems);
     pantryListView.setAdapter(pantryAdapter);
   }
@@ -67,13 +68,13 @@ public class MainActivity extends AppCompatActivity {
 
   @OnClick(R.id.add_item_submit)
   public void tryAddingNewItem() {
-    String item = sanitizeItemName(addItemInput.getText().toString());
-    if (item.isEmpty()) {
+    String itemName = sanitizeItemName(addItemInput.getText().toString());
+    if (itemName.isEmpty()) {
       addItemInput.setError(getString(R.string.input_is_empty));
-    } else if (pantryItems.contains(item)) {
+    } else if (pantryItems.contains(itemName)) {
       addItemInput.setError(getString(R.string.item_already_exists));
     } else {
-      pantryItems.add(item);
+      storage.add(itemName);
       pantryAdapter.notifyDataSetChanged();
       addItemView.setVisibility(View.GONE);
       addItemInput.setText("");
@@ -109,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
   }
 
   static class PantryListAdapter extends RecyclerView.Adapter<PantryItemViewHolder> {
-    private final List<String> items;
+    private final List<PantryItem> items;
 
-    public PantryListAdapter(List<String> items) {
+    public PantryListAdapter(List<PantryItem> items) {
       this.items = items;
     }
 
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBindViewHolder(PantryItemViewHolder holder, int position) {
-      holder.itemName.setText(items.get(position));
+      holder.itemName.setText(items.get(position).getName());
     }
 
     @Override
