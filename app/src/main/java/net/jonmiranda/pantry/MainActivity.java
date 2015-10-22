@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
     String itemName = sanitizeItemName(addItemInput.getText().toString());
     if (itemName.isEmpty()) {
       addItemInput.setError(getString(R.string.input_is_empty));
-    } else if (pantryItems.contains(itemName)) {
+    } else if (storage.itemWithNameExists(itemName)) {
       addItemInput.setError(getString(R.string.item_already_exists));
     } else {
-      storage.add(itemName);
+      storage.addInstance(itemName);
       pantryAdapter.notifyDataSetChanged();
       addItemView.setVisibility(View.GONE);
       addItemInput.setText("");
