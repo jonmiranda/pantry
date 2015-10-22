@@ -16,8 +16,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import net.jonmiranda.pantry.storage.PantryItem;
+import net.jonmiranda.pantry.storage.PantryItemInstance;
 import net.jonmiranda.pantry.storage.Storage;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -135,7 +138,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBindViewHolder(PantryItemViewHolder holder, int position) {
-      holder.itemName.setText(items.get(position).getName());
+      PantryItem item = items.get(position);
+      // TODO: Assumes that every item will always have at least one instance.
+      // Which is true for how we have it set up now.
+      holder.name.setText(item.getName());
+
+      PantryItemInstance instance = item.getInstances().first();
+      Calendar endTime = Calendar.getInstance();
+      Date startTime =
+          (Date) Utils.firstNonNull(instance.getBought(), instance.getCreated(), endTime);
+      holder.bought.setText(Utils.getDisplayableTime(
+          endTime.get(Calendar.SECOND) - startTime.getCreated().getSeconds()));
     }
 
     @Override
@@ -145,11 +158,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   static class PantryItemViewHolder extends RecyclerView.ViewHolder {
-    protected TextView itemName;
+    protected TextView name;
+    protected TextView bought;
 
     public PantryItemViewHolder(View view) {
       super(view);
-      itemName = (TextView) view.findViewById(R.id.item_name);
+      name = (TextView) view.findViewById(R.id.item_name);
+      bought = (TextView) view.findViewById(R.id.item_bought);
     }
   }
 }
