@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
 }
 
 dependencies {
@@ -26,4 +29,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.0'
 
     compile 'com.jakewharton:butterknife:7.0.1'
+
+    compile 'io.realm:realm-android:0.84.0'
 }
