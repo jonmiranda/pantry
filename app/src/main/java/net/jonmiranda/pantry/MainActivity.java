@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
   private InputMethodManager inputMethodManager;
 
   private Storage storage;
-  private List<PantryItem> pantryItems;
   private PantryListAdapter pantryAdapter;
 
   @Override
@@ -49,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
 
     storage = new Storage(this);
-    pantryItems = storage.getItems();
-    pantryAdapter = new PantryListAdapter(pantryItems);
+    pantryAdapter = new PantryListAdapter(storage.getItems());
     pantryListView.setAdapter(pantryAdapter);
   }
 
