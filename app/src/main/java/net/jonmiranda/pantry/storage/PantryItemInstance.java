@@ -8,17 +8,9 @@ import io.realm.annotations.RealmClass;
 @RealmClass
 public class PantryItemInstance extends RealmObject {
 
-  private int quantity;
   private Date created;
   private Date bought;
-
-  public int getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
+  private boolean inStock;
 
   public Date getCreated() {
     return created;
@@ -34,5 +26,13 @@ public class PantryItemInstance extends RealmObject {
 
   public void setBought(Date bought) {
     this.bought = bought;
+  }
+
+  public boolean isInStock() {
+    return inStock;
+  }
+
+  public void setInStock(boolean inStock) {
+    this.inStock = inStock;
   }
 }

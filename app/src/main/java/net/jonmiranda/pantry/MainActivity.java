@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -48,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
 
     storage = new Storage(this);
-    pantryAdapter = new PantryListAdapter(storage.getItems());
+    pantryAdapter = new PantryListAdapter(storage);
+    pantryAdapter.setHasStableIds(true);
     pantryListView.setAdapter(pantryAdapter);
   }
 
@@ -121,48 +123,129 @@ public class MainActivity extends AppCompatActivity {
   }
 
   static class PantryListAdapter extends RecyclerView.Adapter<PantryItemViewHolder> {
+    private static final int IN_STOCK_VIEW_TYPE = 0;
+    private static final int OUT_OF_STOCK_VIEW_TYPE = 1;
+
+    private final Storage storage;
     private final List<PantryItem> items;
 
-    public PantryListAdapter(List<PantryItem> items) {
-      this.items = items;
+    public PantryListAdapter(Storage storage) {
+      this.storage = storage;
+      this.items = storage.getItems();
     }
 
     @Override
     public PantryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      View view = LayoutInflater.from(parent.getContext())
-          .inflate(R.layout.pantry_list_view_item, parent, false);
-      return new PantryItemViewHolder(view);
+      int layoutId = viewType == IN_STOCK_VIEW_TYPE
+          ? R.layout.pantry_list_view_item_in
+          : R.layout.pantry_list_view_item_out;
+      View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+      if (viewType == IN_STOCK_VIEW_TYPE) {
+        return new PantryItemViewHolderInStock(view);
+      } else {
+        return new PantryItemViewHolderOutOfStock(view);
+      }
     }
 
     @Override
     public void onBindViewHolder(PantryItemViewHolder holder, int position) {
       PantryItem item = items.get(position);
-      // TODO: Assumes that every item will always have at least one instance.
-      // Which is true for how we have it set up now.
+      holder.bind(storage, item);
       holder.name.setText(item.getName());
 
+      if (getItemViewType(position) == IN_STOCK_VIEW_TYPE) {
+        onBindViewHolder((PantryItemViewHolderInStock) holder, item);
+      } else {
+        onBindViewHolder((PantryItemViewHolderOutOfStock) holder, item);
+      }
+    }
+
+    private void onBindViewHolder(PantryItemViewHolderInStock holder, final PantryItem item) {
+      holder.name.setChecked(PantryItem.isInStock(item));
+      holder.setOnClickListener(this);
       PantryItemInstance instance = item.getInstances().first();
       Calendar endTime = Calendar.getInstance();
       Date startTime =
           (Date) Utils.firstNonNull(instance.getBought(), instance.getCreated(), endTime);
       holder.bought.setText(Utils.getDisplayableTime(
-          endTime.get(Calendar.SECOND) - startTime.getCreated().getSeconds()));
+          endTime.get(Calendar.SECOND) - startTime.getSeconds()));
+    }
+
+    private void onBindViewHolder(PantryItemViewHolderOutOfStock holder, final PantryItem item) {
+      holder.setOnClickListener(this);
     }
 
     @Override
     public int getItemCount() {
       return items.size();
     }
+
+    @Override
+    public long getItemId(int position) {
+      return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+      return PantryItem.isInStock(items.get(position))
+          ? IN_STOCK_VIEW_TYPE
+          : OUT_OF_STOCK_VIEW_TYPE;
+    }
   }
 
   static class PantryItemViewHolder extends RecyclerView.ViewHolder {
     protected TextView name;
-    protected TextView bought;
+    protected PantryItem item;
+    protected Storage storage;
 
     public PantryItemViewHolder(View view) {
       super(view);
       name = (TextView) view.findViewById(R.id.item_name);
+    }
+
+    public void bind(Storage storage, PantryItem item) {
+      this.storage = storage;
+      this.item = item;
+    }
+  }
+
+  static class PantryItemViewHolderInStock extends PantryItemViewHolder {
+    protected CheckBox name;
+    protected TextView bought;
+
+    public PantryItemViewHolderInStock(View view) {
+      super(view);
+      name = (CheckBox) super.name;
       bought = (TextView) view.findViewById(R.id.item_bought);
+    }
+
+    protected void setOnClickListener(final PantryListAdapter adapter) {
+      name.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          storage.setItemAsOutOfSock(item);
+          adapter.notifyDataSetChanged();
+        }
+      });
+    }
+  }
+
+  static class PantryItemViewHolderOutOfStock extends PantryItemViewHolder {
+    protected View addInstance;
+
+    public PantryItemViewHolderOutOfStock(View view) {
+      super(view);
+      addInstance = view.findViewById(R.id.item_add_instance);
+    }
+
+    public void setOnClickListener(final PantryListAdapter adapter) {
+      addInstance.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View unused) {
+          storage.addInstance(item.getName());
+          adapter.notifyDataSetChanged();
+        }
+      });
     }
   }
 }

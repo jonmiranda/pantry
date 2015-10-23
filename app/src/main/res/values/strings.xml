@@ -7,4 +7,6 @@
     <string name="add_item_input_hint">New Item</string>
     <string name="input_is_empty">No text was entered.</string>
     <string name="item_already_exists">Item already exists in Pantry.</string>
+    <string name="out">OUT</string>
+    <string name="plus">+</string>
 </resources>
