@@ -21,7 +21,8 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"/>
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/full_spacer"/>
 
         <LinearLayout
             android:id="@+id/add_item_view"
@@ -29,6 +30,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:orientation="horizontal"
+            android:background="@android:color/white"
             tools:background="#00FF00"
             tools:visibility="visible">
             <EditText
