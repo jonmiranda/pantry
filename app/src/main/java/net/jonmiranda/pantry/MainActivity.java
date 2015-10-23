@@ -50,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
         : View.VISIBLE;
 
     addItemView.setVisibility(visibility);
-
     if (visibility == View.VISIBLE) {
       addItemInput.requestFocus();
       inputMethodManager.showSoftInput(addItemInput, InputMethodManager.SHOW_IMPLICIT);
     } else {
+      addItemInput.setError(null);
       hideKeyboard();
     }
   }
@@ -67,10 +67,11 @@ public class MainActivity extends AppCompatActivity {
     } else if (storage.itemWithNameExists(itemName)) {
       addItemInput.setError(getString(R.string.item_already_exists));
     } else {
-      storage.addInstance(itemName);
+      storage.addItem(itemName);
       pantryAdapter.notifyDataSetChanged();
       addItemView.setVisibility(View.GONE);
       addItemInput.setText("");
+      addItemInput.setError("");
       hideKeyboard();
     }
   }

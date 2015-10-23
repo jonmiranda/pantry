@@ -2,7 +2,6 @@ package net.jonmiranda.pantry.storage;
 
 import java.util.Date;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.RealmClass;
 
@@ -10,10 +9,8 @@ import io.realm.annotations.RealmClass;
 public class PantryItem extends RealmObject {
 
   private String name;
-  private Date lastBought;
   private boolean inStock;
-
-  private RealmList<PantryItemInstance> instances;
+  private Date purchased;
 
   public String getName() {
     return name;
@@ -23,27 +20,19 @@ public class PantryItem extends RealmObject {
     this.name = name;
   }
 
-  public RealmList<PantryItemInstance> getInstances() {
-    return instances;
-  }
-
-  public void setInstances(RealmList<PantryItemInstance> instances) {
-    this.instances = instances;
-  }
-
-  public Date getLastBought() {
-    return lastBought;
-  }
-
-  public void setLastBought(Date lastBought) {
-    this.lastBought = lastBought;
-  }
-
   public boolean isInStock() {
     return inStock;
   }
 
   public void setInStock(boolean inStock) {
     this.inStock = inStock;
+  }
+
+  public Date getPurchased() {
+    return purchased;
+  }
+
+  public void setPurchased(Date purchased) {
+    this.purchased = purchased;
   }
 }

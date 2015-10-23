@@ -4,20 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/full_spacer">
-    <TextView
-        android:id="@+id/item_add_instance"
-        android:layout_width="32dp"
-        android:layout_height="wrap_content"
-        android:text="@string/plus"
-        android:gravity="center"/>
-    <TextView
+    <CheckBox
         android:id="@+id/item_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         tools:text="Apples"/>
     <TextView
+        android:id="@+id/item_purchased"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="@string/out"/>
+        android:layout_height="match_parent" />
 </LinearLayout>
