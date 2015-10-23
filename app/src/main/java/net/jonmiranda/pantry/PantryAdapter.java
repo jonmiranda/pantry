@@ -54,7 +54,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
   }
 
   private void onBindViewHolder(PantryItemViewHolderInStock holder, final PantryItem item) {
-    holder.name.setChecked(PantryItem.isInStock(item));
+    holder.name.setChecked(item.isInStock());
     holder.setOnClickListener(this);
     PantryItemInstance instance = item.getInstances().first();
     Calendar endTime = Calendar.getInstance();
@@ -80,7 +80,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
 
   @Override
   public int getItemViewType(int position) {
-    return PantryItem.isInStock(items.get(position))
+    return items.get(position).isInStock()
         ? IN_STOCK_VIEW_TYPE
         : OUT_OF_STOCK_VIEW_TYPE;
   }
@@ -115,7 +115,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
       name.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          storage.setItemAsOutOfSock(item);
+          storage.setItemAsOutOfStock(item);
           adapter.notifyDataSetChanged();
         }
       });

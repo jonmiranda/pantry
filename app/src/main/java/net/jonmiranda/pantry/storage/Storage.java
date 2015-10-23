@@ -20,7 +20,7 @@ public class Storage {
 
   public List<PantryItem> getItems() {
     RealmResults<PantryItem> items = realm.allObjects(PantryItem.class);
-    items.sort(new String[] {"inStock", "lastBought"}, new boolean[] {true, false});
+    items.sort(new String[] {"inStock", "lastBought"}, new boolean[] {false, false});
     return items;
   }
 
@@ -41,7 +41,7 @@ public class Storage {
   }
 
   public PantryItem getItemWithName(String name) {
-    return realm.allObjects(PantryItem.class).where().contains("name", name).findFirst();
+    return realm.allObjects(PantryItem.class).where().equalTo("name", name).findFirst();
   }
 
   public void addInstance(String itemName) {
@@ -62,7 +62,7 @@ public class Storage {
     realm.commitTransaction();
   }
 
-  public void setItemAsOutOfSock(PantryItem item) {
+  public void setItemAsOutOfStock(PantryItem item) {
     RealmList<PantryItemInstance> instances = item.getInstances();
     realm.beginTransaction();
     item.setInStock(false);
