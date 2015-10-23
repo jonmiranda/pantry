@@ -1,5 +1,6 @@
 package net.jonmiranda.pantry;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,15 +11,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
+import net.jonmiranda.pantry.storage.PantryItem;
 import net.jonmiranda.pantry.storage.Storage;
+
+import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
   @Bind(R.id.add_item_view) View addItemView;
@@ -28,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
   private Storage storage;
   private PantryAdapter pantryAdapter;
+
+  private String lastSelectedItemName;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
 
     storage = new Storage(this);
-    pantryAdapter = new PantryAdapter(storage);
+    pantryAdapter = new PantryAdapter(this, storage);
     pantryListView.setAdapter(pantryAdapter);
   }
 
@@ -98,6 +105,25 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+    if (lastSelectedItemName != null) {
+      Calendar newDate = Calendar.getInstance();
+      newDate.set(year, monthOfYear, dayOfMonth);
+      storage.setItemPurchased(lastSelectedItemName, newDate.getTime());
+      pantryAdapter.notifyDataSetChanged();
+    }
+  }
+
+  public void showDatePicker(String itemName) {
+    lastSelectedItemName = itemName;
+    PantryItem item = storage.getItemWithName(itemName);
+    DatePickerFragment datePickerFragment =
+        DatePickerFragment.newInstance(item.getPurchased().getTime());
+    datePickerFragment.setCancelable(true);
+    datePickerFragment.show(getSupportFragmentManager(), DatePickerFragment.TAG);
   }
 
   private String sanitizeItemName(String itemName) {

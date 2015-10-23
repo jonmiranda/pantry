@@ -15,10 +15,12 @@ import java.util.Date;
 import java.util.List;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
+  private final MainActivity activity;
   private final Storage storage;
   private final List<PantryItem> items;
 
-  public PantryAdapter(Storage storage) {
+  public PantryAdapter(MainActivity activity, Storage storage) {
+    this.activity = activity;
     this.storage = storage;
     this.items = storage.getItems();
   }
@@ -36,13 +38,13 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     holder.name.setText(item.getName());
 
     holder.name.setChecked(item.isInStock());
-    holder.setOnClickListener(storage, item, this);
+    holder.setOnClickListener(activity, storage, item, this);
 
     Calendar endTime = Calendar.getInstance();
     Date startTime =
         (Date) Utils.firstNonNull(item.getPurchased(), endTime);
     holder.purchased.setText(
-        Utils.getDisplayableTime(endTime.get(Calendar.SECOND) - startTime.getSeconds()));
+        Utils.getDisplayableTime(endTime.getTimeInMillis() - startTime.getTime()));
   }
 
   @Override
@@ -61,11 +63,21 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     }
 
     protected void setOnClickListener(
-        final Storage storage, final PantryItem item, final PantryAdapter adapter) {
+        final MainActivity activity,
+        final Storage storage,
+        final PantryItem item,
+        final PantryAdapter adapter) {
       name.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           storage.setItemInStock(item, name.isChecked());
+          adapter.notifyDataSetChanged();
+        }
+      });
+      purchased.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          activity.showDatePicker(item.getName());
           adapter.notifyDataSetChanged();
         }
       });
