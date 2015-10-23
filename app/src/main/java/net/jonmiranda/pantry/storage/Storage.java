@@ -8,6 +8,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class Storage {
 
@@ -18,7 +19,9 @@ public class Storage {
   }
 
   public List<PantryItem> getItems() {
-    return realm.allObjects(PantryItem.class);
+    RealmResults<PantryItem> items = realm.allObjects(PantryItem.class);
+    items.sort(new String[] {"inStock", "lastBought"}, new boolean[] {true, false});
+    return items;
   }
 
   public boolean itemWithNameExists(String name) {
@@ -27,6 +30,8 @@ public class Storage {
 
   private PantryItem addItem(String itemName) {
     PantryItem item = new PantryItem();
+    item.setInStock(true);
+    item.setLastBought(Calendar.getInstance().getTime());
     item.setName(itemName);
 
     realm.beginTransaction();
@@ -51,19 +56,22 @@ public class Storage {
     instance.setBought(now);
 
     realm.beginTransaction();
+    item.setInStock(true);
+    item.setLastBought(now);
     item.getInstances().add(instance);
     realm.commitTransaction();
   }
 
   public void setItemAsOutOfSock(PantryItem item) {
     RealmList<PantryItemInstance> instances = item.getInstances();
+    realm.beginTransaction();
+    item.setInStock(false);
     if (instances != null) {
-      realm.beginTransaction();
       for (int i = 0; i < instances.size(); ++i) {
         instances.get(i).setInStock(false);
       }
-      realm.commitTransaction();
     }
+    realm.commitTransaction();
   }
 
   public void delete() {

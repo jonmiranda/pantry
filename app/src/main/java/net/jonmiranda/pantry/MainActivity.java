@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     storage = new Storage(this);
     pantryAdapter = new PantryAdapter(storage);
-    pantryAdapter.setHasStableIds(true);
     pantryListView.setAdapter(pantryAdapter);
   }
 
