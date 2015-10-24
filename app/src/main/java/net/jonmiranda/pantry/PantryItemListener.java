@@ -1,5 +1,5 @@
 package net.jonmiranda.pantry;
 
 public interface PantryItemListener {
-  void onItemClicked(String itemName);
+  void onItemPurchaseClicked(String itemName);
 }

@@ -19,6 +19,8 @@ import net.jonmiranda.pantry.storage.Storage;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -31,9 +33,10 @@ public class MainActivity
   @Bind(R.id.add_item_view) View addItemView;
   @Bind(R.id.add_item_input) EditText addItemInput;
 
+  @Inject Storage storage;
+
   private InputMethodManager inputMethodManager;
 
-  private Storage storage;
   private PantryAdapter pantryAdapter;
 
   private String lastSelectedItemName;
@@ -43,11 +46,11 @@ public class MainActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
+    ((PantryApplication) getApplication()).inject(this);
 
     inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
 
-    storage = new Storage(this);
     pantryAdapter = new PantryAdapter(this, storage);
     pantryListView.setAdapter(pantryAdapter);
   }
@@ -110,7 +113,7 @@ public class MainActivity
   }
 
   @Override
-  public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+  public void onDateSet(DatePicker unused, int year, int monthOfYear, int dayOfMonth) {
     if (lastSelectedItemName != null) {
       Calendar newDate = Calendar.getInstance();
       newDate.set(year, monthOfYear, dayOfMonth);
@@ -120,7 +123,7 @@ public class MainActivity
   }
 
   @Override
-  public void onItemClicked(String itemName) {
+  public void onItemPurchaseClicked(String itemName) {
     lastSelectedItemName = itemName;
     PantryItem item = storage.getItemWithName(itemName);
     DatePickerFragment datePickerFragment =
