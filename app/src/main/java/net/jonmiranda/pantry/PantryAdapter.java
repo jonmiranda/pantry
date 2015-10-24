@@ -15,12 +15,12 @@ import java.util.Date;
 import java.util.List;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
-  private final MainActivity activity;
+  private final PantryItemListener listener;
   private final Storage storage;
   private final List<PantryItem> items;
 
-  public PantryAdapter(MainActivity activity, Storage storage) {
-    this.activity = activity;
+  public PantryAdapter(PantryItemListener listener, Storage storage) {
+    this.listener = listener;
     this.storage = storage;
     this.items = storage.getItems();
   }
@@ -38,7 +38,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     holder.name.setText(item.getName());
 
     holder.name.setChecked(item.isInStock());
-    holder.setOnClickListener(activity, storage, item, this);
+    holder.setOnClickListener(listener, storage, item, this);
 
     Calendar endTime = Calendar.getInstance();
     Date startTime =
@@ -63,7 +63,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     }
 
     protected void setOnClickListener(
-        final MainActivity activity,
+        final PantryItemListener listener,
         final Storage storage,
         final PantryItem item,
         final PantryAdapter adapter) {
@@ -77,8 +77,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
       purchased.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          activity.showDatePicker(item.getName());
-          adapter.notifyDataSetChanged();
+          listener.onItemClicked(item.getName());
         }
       });
     }

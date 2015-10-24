@@ -23,7 +23,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class MainActivity
+    extends AppCompatActivity
+    implements DatePickerDialog.OnDateSetListener, PantryItemListener {
 
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
   @Bind(R.id.add_item_view) View addItemView;
@@ -117,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     }
   }
 
-  public void showDatePicker(String itemName) {
+  @Override
+  public void onItemClicked(String itemName) {
     lastSelectedItemName = itemName;
     PantryItem item = storage.getItemWithName(itemName);
     DatePickerFragment datePickerFragment =
