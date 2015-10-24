@@ -80,7 +80,7 @@ public class MainActivity
       pantryAdapter.notifyDataSetChanged();
       addItemView.setVisibility(View.GONE);
       addItemInput.setText("");
-      addItemInput.setError("");
+      addItemInput.setError(null);
       hideKeyboard();
     }
   }
