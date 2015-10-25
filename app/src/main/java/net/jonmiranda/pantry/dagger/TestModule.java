@@ -16,10 +16,10 @@ import dagger.Provides;
   },
   library = true
 )
-public class DebugModule {
+public class TestModule {
     final PantryApplication application;
 
-    public DebugModule(PantryApplication application) {
+    public TestModule(PantryApplication application) {
         this.application = application;
     }
 

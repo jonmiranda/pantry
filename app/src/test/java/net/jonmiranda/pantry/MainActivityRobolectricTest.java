@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import net.jonmiranda.pantry.dagger.TestModule;
 import net.jonmiranda.pantry.storage.PantryItem;
 import net.jonmiranda.pantry.storage.Storage;
 
@@ -13,9 +14,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
+
+import dagger.ObjectGraph;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -29,6 +33,8 @@ public class MainActivityRobolectricTest {
 
   @Before
   public void setUp() {
+    PantryApplication application = (PantryApplication) RuntimeEnvironment.application;
+    application.objectGraph = ObjectGraph.create(new TestModule(application));
     activity = Robolectric.setupActivity(MainActivity.class);
     storage = activity.storage;
   }

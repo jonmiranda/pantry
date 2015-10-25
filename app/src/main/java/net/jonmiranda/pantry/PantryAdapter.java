@@ -12,17 +12,14 @@ import net.jonmiranda.pantry.storage.Storage;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
   private final PantryItemListener listener;
   private final Storage storage;
-  private final List<PantryItem> items;
 
   public PantryAdapter(PantryItemListener listener, Storage storage) {
     this.listener = listener;
     this.storage = storage;
-    this.items = storage.getItems();
   }
 
   @Override
@@ -34,7 +31,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
 
   @Override
   public void onBindViewHolder(PantryItemViewHolder holder, int position) {
-    PantryItem item = items.get(position);
+    PantryItem item = storage.getItems().get(position);
     holder.name.setText(item.getName());
 
     holder.name.setChecked(item.isInStock());
@@ -49,7 +46,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
 
   @Override
   public int getItemCount() {
-    return items.size();
+    return storage.getItems().size();
   }
 
   static class PantryItemViewHolder extends RecyclerView.ViewHolder {
