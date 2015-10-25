@@ -1,5 +1,7 @@
 package net.jonmiranda.pantry;
 
+import java.util.concurrent.TimeUnit;
+
 public class Utils {
 
   public static Object firstNonNull(Object... objects) {
@@ -11,23 +13,23 @@ public class Utils {
     return null;
   }
 
-  public static String getDisplayableTime(long milliseconds) {
-    final long seconds = milliseconds / 1000;
+  public static String getDisplayableTime(long delta_milliseconds) {
+    final long seconds = delta_milliseconds / 1000;
     final long minutes = seconds / 60;
     final long hours = minutes / 60;
     final long days = hours / 24;
     final long months = days / 31;
     final long years = days / 365;
 
-    if (milliseconds < 0) {
+    if (delta_milliseconds < 0) {
       return "Future";
-    } else if (days <= 1) { // 24 * 60 * 60
+    } else if (delta_milliseconds < TimeUnit.DAYS.toMillis(1)) {
       return "Today";
-    } else if (days <= 2) { // 48 * 60 * 60
+    } else if (delta_milliseconds < TimeUnit.DAYS.toMillis(2)) {
       return "Yesterday";
-    } else if (days < 31) { // 30 * 24 * 60 * 60
-      return days <= 1 ? "1 day ago" : days + " days ago";
-    } else if (months <= 1) { // 12 * 30 * 24 * 60 * 60
+    } else if (delta_milliseconds < TimeUnit.DAYS.toMillis(31)) {
+      return days + " days ago";
+    } else if (delta_milliseconds < TimeUnit.DAYS.toMillis(365)) {
       return months <= 1 ? "1 month ago" : months + " months ago";
     } else {
       return years <= 1 ? "1 year ago" : years + " years ago";
