@@ -1,17 +1,18 @@
 package net.jonmiranda.pantry.storage;
 
+import net.jonmiranda.pantry.Utils;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class DebugStorage implements Storage {
+public class TestStorage implements Storage {
 
   private List<PantryItem> items;
 
-  public DebugStorage() {
+  public TestStorage() {
     items = new ArrayList<>();
   }
 
@@ -19,7 +20,7 @@ public class DebugStorage implements Storage {
     Collections.sort(items, new Comparator<PantryItem>() {
       @Override
       public int compare(PantryItem lhs, PantryItem rhs) {
-        return (int) (rhs.getPurchased().getTime() - lhs.getPurchased().getTime());
+        return (int) (lhs.getPurchased().getTime() - rhs.getPurchased().getTime());
       }
     });
     return items;
@@ -33,7 +34,7 @@ public class DebugStorage implements Storage {
     PantryItem item = new PantryItem();
     item.setInStock(true);
     item.setName(itemName);
-    item.setPurchased(Calendar.getInstance().getTime());
+    item.setPurchased(Utils.getTodaysDate());
     items.add(item);
     return item;
   }
@@ -56,7 +57,7 @@ public class DebugStorage implements Storage {
 
   public void setItemInStock(PantryItem item, boolean inStock) {
     item.setInStock(inStock);
-    item.setPurchased(Calendar.getInstance().getTime());
+    item.setPurchased(Utils.getTodaysDate());
   }
 
   public void delete() {

@@ -2,7 +2,7 @@ package net.jonmiranda.pantry.dagger;
 
 import net.jonmiranda.pantry.MainActivity;
 import net.jonmiranda.pantry.PantryApplication;
-import net.jonmiranda.pantry.storage.DebugStorage;
+import net.jonmiranda.pantry.storage.TestStorage;
 import net.jonmiranda.pantry.storage.Storage;
 
 import javax.inject.Singleton;
@@ -25,6 +25,6 @@ public class TestModule {
 
     @Provides @Singleton
     Storage provideStorage() {
-        return new DebugStorage();
+        return new TestStorage();
     }
 }

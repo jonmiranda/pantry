@@ -1,5 +1,7 @@
 package net.jonmiranda.pantry;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
@@ -34,5 +36,14 @@ public class Utils {
     } else {
       return years <= 1 ? "1 year ago" : years + " years ago";
     }
+  }
+
+  public static Date getTodaysDate() {
+    Calendar now = Calendar.getInstance();
+    now.set(Calendar.HOUR, 0);
+    now.set(Calendar.MINUTE, 0);
+    now.set(Calendar.SECOND, 0);
+    now.set(Calendar.MILLISECOND, 0);
+    return now.getTime();
   }
 }

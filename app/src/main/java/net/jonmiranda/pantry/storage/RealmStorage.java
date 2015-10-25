@@ -2,7 +2,8 @@ package net.jonmiranda.pantry.storage;
 
 import android.content.Context;
 
-import java.util.Calendar;
+import net.jonmiranda.pantry.Utils;
+
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class RealmStorage implements Storage {
 
   public List<PantryItem> getItems() {
     RealmResults<PantryItem> items = realm.allObjects(PantryItem.class);
-    items.sort("inStock", false);
+    items.sort(new String[] {"inStock", "purchased", "name"}, new boolean[] {false, true, true});
     return items;
   }
 
@@ -37,7 +38,7 @@ public class RealmStorage implements Storage {
     PantryItem item = new PantryItem();
     item.setInStock(true);
     item.setName(itemName);
-    item.setPurchased(Calendar.getInstance().getTime());
+    item.setPurchased(Utils.getTodaysDate());
 
     realm.beginTransaction();
     item = realm.copyToRealm(item);
@@ -61,7 +62,7 @@ public class RealmStorage implements Storage {
   public void setItemInStock(PantryItem item, boolean inStock) {
     realm.beginTransaction();
     item.setInStock(inStock);
-    item.setPurchased(Calendar.getInstance().getTime());
+    item.setPurchased(Utils.getTodaysDate());
     realm.commitTransaction();
   }
 
