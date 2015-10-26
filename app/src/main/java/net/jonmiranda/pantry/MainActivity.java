@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observer;
+import rx.functions.Func1;
 
 public class MainActivity
     extends RxAppCompatActivity
@@ -64,27 +65,31 @@ public class MainActivity
 
     RxTextView.afterTextChangeEvents(addItemInput)
         .compose(this.<TextViewAfterTextChangeEvent>bindToLifecycle())
-        .subscribe(
-            new Observer<TextViewAfterTextChangeEvent>() {
-              @Override
-              public void onCompleted() {
-              }
+        .map(new Func1<TextViewAfterTextChangeEvent, String>() {
+          @Override
+          public String call(TextViewAfterTextChangeEvent event) {
+            return sanitizeItemName(event.editable().toString());
+          }
+        })
+        .subscribe(new Observer<String>() {
+          @Override
+          public void onCompleted() {
+          }
 
-              @Override
-              public void onError(Throwable e) {
-              }
+          @Override
+          public void onError(Throwable e) {
+          }
 
-              @Override
-              public void onNext(TextViewAfterTextChangeEvent event) {
-                String itemName = sanitizeItemName(event.editable().toString());
-                boolean enableSubmit = !itemName.isEmpty();
-                if (storage.itemWithNameExists(itemName)) {
-                  addItemInput.setError(getString(R.string.item_already_exists));
-                  enableSubmit = false;
-                }
-                addItemSubmit.setEnabled(enableSubmit);
-              }
-            });
+          @Override
+          public void onNext(String itemName) {
+            boolean enableSubmit = !itemName.isEmpty();
+            if (storage.itemWithNameExists(itemName)) {
+              addItemInput.setError(getString(R.string.item_already_exists));
+              enableSubmit = false;
+            }
+            addItemSubmit.setEnabled(enableSubmit);
+          }
+        });
   }
 
   @OnClick(R.id.fab)
