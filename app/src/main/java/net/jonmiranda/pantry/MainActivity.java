@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +16,7 @@ import android.widget.EditText;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import net.jonmiranda.pantry.storage.PantryItem;
 import net.jonmiranda.pantry.storage.Storage;
@@ -31,7 +31,7 @@ import butterknife.OnClick;
 import rx.Observer;
 
 public class MainActivity
-    extends AppCompatActivity
+    extends RxAppCompatActivity
     implements DatePickerDialog.OnDateSetListener, PantryItemListener {
 
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
@@ -62,25 +62,29 @@ public class MainActivity
     pantryAdapter = new PantryAdapter(this, storage);
     pantryListView.setAdapter(pantryAdapter);
 
-    RxTextView.afterTextChangeEvents(addItemInput).subscribe(
-        new Observer<TextViewAfterTextChangeEvent>() {
-          @Override
-          public void onCompleted() {}
+    RxTextView.afterTextChangeEvents(addItemInput)
+        .compose(this.<TextViewAfterTextChangeEvent>bindToLifecycle())
+        .subscribe(
+            new Observer<TextViewAfterTextChangeEvent>() {
+              @Override
+              public void onCompleted() {
+              }
 
-          @Override
-          public void onError(Throwable e) {}
+              @Override
+              public void onError(Throwable e) {
+              }
 
-          @Override
-          public void onNext(TextViewAfterTextChangeEvent event) {
-            String itemName = sanitizeItemName(event.editable().toString());
-            boolean enableSubmit = !itemName.isEmpty();
-            if (storage.itemWithNameExists(itemName)) {
-              addItemInput.setError(getString(R.string.item_already_exists));
-              enableSubmit = false;
-            }
-            addItemSubmit.setEnabled(enableSubmit);
-          }
-        });
+              @Override
+              public void onNext(TextViewAfterTextChangeEvent event) {
+                String itemName = sanitizeItemName(event.editable().toString());
+                boolean enableSubmit = !itemName.isEmpty();
+                if (storage.itemWithNameExists(itemName)) {
+                  addItemInput.setError(getString(R.string.item_already_exists));
+                  enableSubmit = false;
+                }
+                addItemSubmit.setEnabled(enableSubmit);
+              }
+            });
   }
 
   @OnClick(R.id.fab)
