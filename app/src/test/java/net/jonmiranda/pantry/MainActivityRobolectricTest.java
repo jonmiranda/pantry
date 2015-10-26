@@ -112,16 +112,19 @@ public class MainActivityRobolectricTest {
   @Test
   public void testAddingItemUpdatesUI() {
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
 
     addItem(
         "Apples",
-        (TextView) activity.findViewById(R.id.add_item_input),
+        itemInput,
         activity.findViewById(R.id.add_item_submit));
 
     View itemView = getItemFromList(itemList, 0);
     CheckBox item = (CheckBox) itemView.findViewById(R.id.item_name);
     TextView purchased = (TextView) itemView.findViewById(R.id.item_purchased);
 
+    assertTrue(itemInput.getText().equals(""));
+    assertTrue(itemInput.getError() == null);
     assertTrue(item.getText().equals("Apples"));
     assertTrue(item.isChecked());
     assertTrue(purchased.getText().equals("Today"));

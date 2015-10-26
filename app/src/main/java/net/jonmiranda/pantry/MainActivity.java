@@ -108,10 +108,8 @@ public class MainActivity
     String itemName = sanitizeItemName(addItemInput.getText().toString());
     storage.addItem(itemName);
     pantryAdapter.notifyDataSetChanged();
-    addItemView.setVisibility(View.GONE);
     addItemInput.setText("");
     addItemInput.setError(null);
-    hideKeyboard();
   }
 
   @Override
