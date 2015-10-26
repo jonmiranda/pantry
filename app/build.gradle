@@ -32,6 +32,8 @@ dependencies {
 
     compile 'com.jakewharton:butterknife:7.0.1'
 
+    compile 'com.jakewharton.rxbinding:rxbinding:0.3.0'
+
     compile group: 'com.squareup.dagger', name: 'dagger', version: '1.2.2'
     provided group: 'com.squareup.dagger', name: 'dagger-compiler', version: '1.2.2'
 
