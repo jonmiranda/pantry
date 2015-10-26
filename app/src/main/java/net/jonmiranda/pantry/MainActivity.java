@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +15,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
+import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+
 import net.jonmiranda.pantry.storage.PantryItem;
 import net.jonmiranda.pantry.storage.Storage;
 
@@ -26,12 +28,14 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observer;
 
 public class MainActivity
     extends AppCompatActivity
     implements DatePickerDialog.OnDateSetListener, PantryItemListener {
 
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
+  @Bind(R.id.add_item_submit) View addItemSubmit;
   @Bind(R.id.add_item_view) View addItemView;
   @Bind(R.id.add_item_input) EditText addItemInput;
 
@@ -57,6 +61,26 @@ public class MainActivity
 
     pantryAdapter = new PantryAdapter(this, storage);
     pantryListView.setAdapter(pantryAdapter);
+
+    RxTextView.afterTextChangeEvents(addItemInput).subscribe(
+        new Observer<TextViewAfterTextChangeEvent>() {
+          @Override
+          public void onCompleted() {}
+
+          @Override
+          public void onError(Throwable e) {}
+
+          @Override
+          public void onNext(TextViewAfterTextChangeEvent event) {
+            String itemName = sanitizeItemName(event.editable().toString());
+            boolean enableSubmit = !itemName.isEmpty();
+            if (storage.itemWithNameExists(itemName)) {
+              addItemInput.setError(getString(R.string.item_already_exists));
+              enableSubmit = false;
+            }
+            addItemSubmit.setEnabled(enableSubmit);
+          }
+        });
   }
 
   @OnClick(R.id.fab)
@@ -76,20 +100,14 @@ public class MainActivity
   }
 
   @OnClick(R.id.add_item_submit)
-  public void tryAddingNewItem() {
+  public void addNewItem() {
     String itemName = sanitizeItemName(addItemInput.getText().toString());
-    if (itemName.isEmpty()) {
-      addItemInput.setError(getString(R.string.input_is_empty));
-    } else if (storage.itemWithNameExists(itemName)) {
-      addItemInput.setError(getString(R.string.item_already_exists));
-    } else {
-      storage.addItem(itemName);
-      pantryAdapter.notifyDataSetChanged();
-      addItemView.setVisibility(View.GONE);
-      addItemInput.setText("");
-      addItemInput.setError(null);
-      hideKeyboard();
-    }
+    storage.addItem(itemName);
+    pantryAdapter.notifyDataSetChanged();
+    addItemView.setVisibility(View.GONE);
+    addItemInput.setText("");
+    addItemInput.setError(null);
+    hideKeyboard();
   }
 
   @Override

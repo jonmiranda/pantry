@@ -44,10 +44,12 @@ public class MainActivityRobolectricTest {
     View fab = activity.findViewById(R.id.fab);
     View listView = activity.findViewById(R.id.pantry_list_view);
     View addItemView = activity.findViewById(R.id.add_item_view);
+    View addItemSubmit = activity.findViewById(R.id.add_item_submit);
 
     assertEquals(fab.getVisibility(), View.VISIBLE);
     assertEquals(listView.getVisibility(), View.VISIBLE);
     assertEquals(addItemView.getVisibility(), View.GONE);
+    assertFalse(addItemSubmit.isEnabled());
   }
 
   @Test
@@ -65,28 +67,31 @@ public class MainActivityRobolectricTest {
   }
 
   @Test
-  public void testErrorWhenAddingItemThatAlreadyExists() {
+  public void testErrorWhenTypingItemThatAlreadyExists() {
     TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
     View submitItemButton = activity.findViewById(R.id.add_item_submit);
 
     addItem("Apples", itemInput, submitItemButton);
-    int itemsSizeBefore = storage.getItems().size();
-    addItem("Apples", itemInput, submitItemButton);
+    itemInput.setText("Apples");
 
     assertEquals(itemInput.getError(), "Item already exists in Pantry.");
-    assertEquals(itemsSizeBefore, storage.getItems().size());
+    assertFalse(submitItemButton.isEnabled());
   }
 
   @Test
-  public void testErrorWhenAddingItemWithNoText() {
+  public void testSubmitEnabledDisabledCases() {
     View submitItemButton = activity.findViewById(R.id.add_item_submit);
     TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
-    int itemsSizeBefore = storage.getItems().size();
 
+    itemInput.setText("Apples");
+    assertTrue(submitItemButton.isEnabled());
     submitItemButton.performClick();
 
-    assertEquals(itemInput.getError(), "No text was entered.");
-    assertEquals(itemsSizeBefore, storage.getItems().size());
+    itemInput.setText("");
+    assertFalse(submitItemButton.isEnabled());
+
+    itemInput.setText("Apples");
+    assertFalse(submitItemButton.isEnabled());
   }
 
   @Test
