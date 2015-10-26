@@ -2,16 +2,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/full_spacer">
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/full_spacer"
+    android:paddingTop="@dimen/full_spacer"
+    android:paddingRight="0dp"
+    android:paddingBottom="@dimen/full_spacer">
     <CheckBox
         android:id="@+id/item_name"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         tools:text="Apples"/>
     <TextView
         android:id="@+id/item_purchased"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/item_more"
+        android:layout_width="wrap_content"
+        android:paddingStart="@dimen/full_spacer"
+        android:paddingEnd="@dimen/full_spacer"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more_vert_black_24dp"/>
 </LinearLayout>

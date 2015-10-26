@@ -1,6 +1,9 @@
 package net.jonmiranda.pantry;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +55,13 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
   static class PantryItemViewHolder extends RecyclerView.ViewHolder {
     protected CheckBox name;
     protected TextView purchased;
+    protected View more;
 
     public PantryItemViewHolder(View view) {
       super(view);
       name = (CheckBox) view.findViewById(R.id.item_name);
       purchased = (TextView) view.findViewById(R.id.item_purchased);
+      more = view.findViewById(R.id.item_more);
     }
 
     protected void setOnClickListener(
@@ -64,6 +69,12 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
         final Storage storage,
         final PantryItem item,
         final PantryAdapter adapter) {
+      more.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          Log.d("PantryAdapter", "more clicked");
+        }
+      });
       name.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
