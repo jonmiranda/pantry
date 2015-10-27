@@ -28,7 +28,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
 public class MainActivity
@@ -62,15 +64,13 @@ public class MainActivity
 
     pantryAdapter = new PantryAdapter(this, storage);
     pantryListView.setAdapter(pantryAdapter);
+  }
 
-    RxTextView.afterTextChangeEvents(addItemInput)
-        .compose(this.<TextViewAfterTextChangeEvent>bindToLifecycle())
-        .map(new Func1<TextViewAfterTextChangeEvent, String>() {
-          @Override
-          public String call(TextViewAfterTextChangeEvent event) {
-            return sanitizeItemName(event.editable().toString());
-          }
-        })
+  @Override
+  public void onResume() {
+    super.onResume();
+
+    getAddItemInputObservable()
         .subscribe(new Observer<String>() {
           @Override
           public void onCompleted() {
@@ -159,6 +159,24 @@ public class MainActivity
         DatePickerFragment.newInstance(item.getPurchased().getTime());
     datePickerFragment.setCancelable(true);
     datePickerFragment.show(getSupportFragmentManager(), DatePickerFragment.TAG);
+  }
+
+  private Observable<String> getAddItemInputObservable() {
+    return RxTextView.afterTextChangeEvents(addItemInput)
+        .compose(this.<TextViewAfterTextChangeEvent>bindToLifecycle())
+        .observeOn(AndroidSchedulers.mainThread())
+        .map(new Func1<TextViewAfterTextChangeEvent, String>() {
+          @Override
+          public String call(TextViewAfterTextChangeEvent event) {
+            return sanitizeItemName(event.editable().toString());
+          }
+        })
+        .filter(new Func1<String, Boolean>() {
+          @Override
+          public Boolean call(String itemName) {
+            return !itemName.isEmpty();
+          }
+        });
   }
 
   private String sanitizeItemName(String itemName) {
