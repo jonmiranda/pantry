@@ -16,6 +16,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowAlertDialog;
+import org.robolectric.shadows.ShadowView;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ import dagger.ObjectGraph;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, manifest = "app/src/main/AndroidManifest.xml", sdk = 19)
@@ -145,6 +148,23 @@ public class MainActivityRobolectricTest {
 
     assertFalse(item.isChecked());
     assertFalse(storage.getItems().get(0).isInStock());
+  }
+
+  @Test
+  public void testClickingMoreOpensDialog() {
+    RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+
+    addItem(
+        "Apples",
+        (TextView) activity.findViewById(R.id.add_item_input),
+        activity.findViewById(R.id.add_item_submit));
+
+    View itemView = getItemFromList(itemList, 0);
+    View more = itemView.findViewById(R.id.item_more);
+    ShadowView.clickOn(more);
+
+    ShadowAlertDialog confirmationDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+    assertEquals("Are you sure you want to delete 'Apples'?", confirmationDialog.getMessage());
   }
 
   @Test

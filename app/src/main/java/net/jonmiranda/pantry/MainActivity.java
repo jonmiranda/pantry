@@ -62,7 +62,7 @@ public class MainActivity
     inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
 
-    pantryAdapter = new PantryAdapter(this, storage);
+    pantryAdapter = new PantryAdapter(this, this, storage);
     pantryListView.setAdapter(pantryAdapter);
   }
 

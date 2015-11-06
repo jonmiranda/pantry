@@ -1,5 +1,7 @@
 package net.jonmiranda.pantry.storage;
 
+import android.support.annotation.Nullable;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,11 +12,13 @@ public interface Storage {
 
   PantryItem addItem(String itemName);
 
-  PantryItem getItemWithName(String name);
+  @Nullable PantryItem getItemWithName(String name);
 
   void setItemPurchased(String itemName, Date purchased);
 
   void setItemInStock(PantryItem item, boolean inStock);
+
+  void deleteItem(PantryItem item);
 
   void delete();
 }

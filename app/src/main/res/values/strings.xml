@@ -9,4 +9,8 @@
     <string name="item_already_exists">Item already exists in Pantry.</string>
     <string name="out">OUT</string>
     <string name="plus">+</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="confirm_delete_message">Are you sure you want to delete item \'%s\'?</string>
 </resources>

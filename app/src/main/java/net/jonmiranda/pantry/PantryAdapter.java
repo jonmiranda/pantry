@@ -1,7 +1,9 @@
 package net.jonmiranda.pantry;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +17,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
+
+  private final Context context;
   private final PantryItemListener listener;
   private final Storage storage;
 
-  public PantryAdapter(PantryItemListener listener, Storage storage) {
+  public PantryAdapter(Context context, PantryItemListener listener, Storage storage) {
+    this.context = context;
     this.listener = listener;
     this.storage = storage;
   }
@@ -36,7 +41,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     holder.name.setText(item.getName());
 
     holder.name.setChecked(item.isInStock());
-    holder.setOnClickListener(listener, storage, item, this);
+    holder.setOnClickListener(context, listener, storage, item, this);
 
     Calendar endTime = Calendar.getInstance();
     Date startTime =
@@ -63,6 +68,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     }
 
     protected void setOnClickListener(
+        final Context context,
         final PantryItemListener listener,
         final Storage storage,
         final PantryItem item,
@@ -70,7 +76,19 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
       more.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          Log.d("PantryAdapter", "more clicked");
+          new AlertDialog.Builder(context)
+              .setMessage(context.getString(R.string.confirm_delete_message, item.getName()))
+              .setTitle(context.getString(R.string.confirm_delete))
+              .setPositiveButton(context.getString(R.string.delete), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  storage.deleteItem(item);
+                  adapter.notifyDataSetChanged();
+                }
+              })
+              .setNegativeButton(context.getString(R.string.cancel), null)
+              .create()
+              .show();
         }
       });
       name.setOnClickListener(new View.OnClickListener() {

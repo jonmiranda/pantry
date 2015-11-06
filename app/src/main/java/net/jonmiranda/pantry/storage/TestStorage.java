@@ -60,6 +60,14 @@ public class TestStorage implements Storage {
     item.setPurchased(Utils.getTodaysDate());
   }
 
+  public void deleteItem(PantryItem item) {
+    for (int i = 0; i < items.size(); ++i) {
+      if (items.get(i).getName().equals(item.getName())) {
+        items.remove(i);
+      }
+    }
+  }
+
   public void delete() {
     items.clear();
   }
