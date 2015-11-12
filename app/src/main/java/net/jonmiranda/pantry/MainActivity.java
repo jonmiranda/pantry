@@ -22,6 +22,7 @@ import net.jonmiranda.pantry.storage.PantryItem;
 import net.jonmiranda.pantry.storage.Storage;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,8 +30,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
 public class MainActivity
@@ -71,17 +72,9 @@ public class MainActivity
     super.onResume();
 
     getAddItemInputObservable()
-        .subscribe(new Observer<String>() {
+        .subscribe(new Action1<String>() {
           @Override
-          public void onCompleted() {
-          }
-
-          @Override
-          public void onError(Throwable e) {
-          }
-
-          @Override
-          public void onNext(String itemName) {
+          public void call(String itemName) {
             boolean enableSubmit = !itemName.isEmpty();
             if (storage.itemWithNameExists(itemName)) {
               addItemInput.setError(getString(R.string.item_already_exists));
@@ -171,6 +164,7 @@ public class MainActivity
             return sanitizeItemName(event.editable().toString());
           }
         })
+        .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
         .filter(new Func1<String, Boolean>() {
           @Override
           public Boolean call(String itemName) {
