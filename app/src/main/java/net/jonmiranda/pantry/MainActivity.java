@@ -38,6 +38,7 @@ public class MainActivity
     extends RxAppCompatActivity
     implements DatePickerDialog.OnDateSetListener, PantryItemListener {
 
+  @Bind(R.id.fab_coordinator) View fabCoordinator;
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
   @Bind(R.id.add_item_submit) View addItemSubmit;
   @Bind(R.id.add_item_view) View addItemView;
@@ -63,7 +64,7 @@ public class MainActivity
     inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
 
-    pantryAdapter = new PantryAdapter(this, this, storage);
+    pantryAdapter = new PantryAdapter(fabCoordinator, this, this, storage);
     pantryListView.setAdapter(pantryAdapter);
   }
 

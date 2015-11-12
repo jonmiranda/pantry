@@ -2,6 +2,7 @@ package net.jonmiranda.pantry;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,11 +19,13 @@ import java.util.Date;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
 
+  private final View fabCoordinator;
   private final Context context;
   private final PantryItemListener listener;
   private final Storage storage;
 
-  public PantryAdapter(Context context, PantryItemListener listener, Storage storage) {
+  public PantryAdapter(View fabCoordinator, Context context, PantryItemListener listener, Storage storage) {
+    this.fabCoordinator = fabCoordinator;
     this.context = context;
     this.listener = listener;
     this.storage = storage;
@@ -41,7 +44,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     holder.name.setText(item.getName());
 
     holder.name.setChecked(item.isInStock());
-    holder.setOnClickListener(context, listener, storage, item, this);
+    holder.setOnClickListener(fabCoordinator, context, listener, storage, item, this);
 
     Calendar endTime = Calendar.getInstance();
     Date startTime =
@@ -68,6 +71,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     }
 
     protected void setOnClickListener(
+        final View fabCoordinator,
         final Context context,
         final PantryItemListener listener,
         final Storage storage,
@@ -93,8 +97,27 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
       });
       name.setOnClickListener(new View.OnClickListener() {
         @Override
-        public void onClick(View v) {
-          storage.setItemInStock(item, name.isChecked());
+        public void onClick(View view) {
+          int messageResource = name.isChecked()
+              ? R.string.item_in_stock
+              : R.string.item_out_of_stock;
+          Snackbar
+              .make(fabCoordinator, messageResource, Snackbar.LENGTH_SHORT)
+              .setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View unused) {
+                  Date undoPurchased = item.getPurchased();
+                  storage.updateItem(item, !name.isChecked(), undoPurchased);
+                  adapter.notifyDataSetChanged();
+                }
+              })
+              .show();
+
+          Date purchased = item.getPurchased();
+          if (name.isChecked()) {
+            purchased = Utils.getTodaysDate();
+          }
+          storage.updateItem(item, name.isChecked(), purchased);
           adapter.notifyDataSetChanged();
         }
       });

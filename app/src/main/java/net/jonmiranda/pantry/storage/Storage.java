@@ -16,7 +16,7 @@ public interface Storage {
 
   void setItemPurchased(String itemName, Date purchased);
 
-  void setItemInStock(PantryItem item, boolean inStock);
+  void updateItem(PantryItem item, boolean inStock, Date purchased);
 
   void deleteItem(PantryItem item);
 

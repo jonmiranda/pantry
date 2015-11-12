@@ -55,9 +55,9 @@ public class TestStorage implements Storage {
     }
   }
 
-  public void setItemInStock(PantryItem item, boolean inStock) {
+  public void updateItem(PantryItem item, boolean inStock, Date purchased) {
     item.setInStock(inStock);
-    item.setPurchased(Utils.getTodaysDate());
+    item.setPurchased(purchased);
   }
 
   public void deleteItem(PantryItem item) {
