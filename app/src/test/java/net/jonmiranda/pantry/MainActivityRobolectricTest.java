@@ -20,9 +20,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dagger.ObjectGraph;
+import rx.functions.Action1;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -175,6 +177,30 @@ public class MainActivityRobolectricTest {
   @Test
   public void testClickingPurchasedOpensDialog() {
     // TODO: Blocked by https://github.com/robolectric/robolectric/issues/783
+  }
+
+  @Test
+  public void testAddItemInputObservable() throws Exception {
+    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
+    final List<String> items = new ArrayList<>();
+
+    activity.getAddItemInputObservable().subscribe(new Action1<String>() {
+      @Override
+      public void call(String item) {
+        items.add(item);
+      }
+    });
+
+    itemInput.setText("A");
+    itemInput.setText("Ap");
+    setItemInputAndWait(itemInput, "App"); // Stimulates the Observable
+    itemInput.setText("Appl");
+    itemInput.setText("Apple");
+    setItemInputAndWait(itemInput, "Apples"); // Stimulates the Observable
+
+    assertEquals(2, items.size());
+    assertEquals("App", items.get(0));
+    assertEquals("Apples", items.get(1));
   }
 
   private static View getItemFromList(RecyclerView list, int position) {

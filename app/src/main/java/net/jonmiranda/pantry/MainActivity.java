@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +38,8 @@ import rx.functions.Func1;
 public class MainActivity
     extends RxAppCompatActivity
     implements DatePickerDialog.OnDateSetListener, PantryItemListener {
+
+  private static final int ITEM_INPUT_WAIT_TIME_MS = 200;
 
   @Bind(R.id.fab_coordinator) View fabCoordinator;
   @Bind(R.id.pantry_list_view) RecyclerView pantryListView;
@@ -155,7 +158,8 @@ public class MainActivity
     datePickerFragment.show(getSupportFragmentManager(), DatePickerFragment.TAG);
   }
 
-  private Observable<String> getAddItemInputObservable() {
+  @VisibleForTesting
+  Observable<String> getAddItemInputObservable() {
     return RxTextView.afterTextChangeEvents(addItemInput)
         .compose(this.<TextViewAfterTextChangeEvent>bindToLifecycle())
         .observeOn(AndroidSchedulers.mainThread())
@@ -165,7 +169,7 @@ public class MainActivity
             return sanitizeItemName(event.editable().toString());
           }
         })
-        .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
+        .debounce(ITEM_INPUT_WAIT_TIME_MS, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
   }
 
   private String sanitizeItemName(String itemName) {
