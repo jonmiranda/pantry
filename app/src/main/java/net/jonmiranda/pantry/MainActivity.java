@@ -165,13 +165,7 @@ public class MainActivity
             return sanitizeItemName(event.editable().toString());
           }
         })
-        .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .filter(new Func1<String, Boolean>() {
-          @Override
-          public Boolean call(String itemName) {
-            return !itemName.isEmpty();
-          }
-        });
+        .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
   }
 
   private String sanitizeItemName(String itemName) {
