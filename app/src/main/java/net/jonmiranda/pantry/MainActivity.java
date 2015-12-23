@@ -124,8 +124,8 @@ public class MainActivity
   }
 
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    int id = item.getItemId();
+  public boolean onOptionsItemSelected(MenuItem menuItem) {
+    int id = menuItem.getItemId();
     switch (id) {
       case R.id.action_settings:
         return true;
@@ -134,8 +134,16 @@ public class MainActivity
         startActivity(new Intent(this, MainActivity.class));
         finish();
         return true;
+      case R.id.default_items:
+        String[] defaultItems = new String[] {"Apples", "Bananas", "Oranges", "Carrots", "Bread",
+            "Chicken Breast", "Salmon", "Turkey Burgers", "Eggs"};
+        for (String item : defaultItems) {
+          storage.addItem(item);
+        }
+        pantryAdapter.notifyDataSetChanged();
+        return true;
     }
-    return super.onOptionsItemSelected(item);
+    return super.onOptionsItemSelected(menuItem);
   }
 
   @Override
