@@ -1,7 +1,6 @@
 package net.jonmiranda.pantry;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -32,8 +30,6 @@ public class MainActivity
 
   @Inject Storage storage;
 
-  private InputMethodManager inputMethodManager;
-
   private PantryAdapter pantryAdapter;
 
   private String lastSelectedItemName;
@@ -47,10 +43,8 @@ public class MainActivity
 
     setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-    inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    pantryAdapter = new PantryAdapter(pantryListView, this, storage);
     pantryListView.setLayoutManager(new LinearLayoutManager(this));
-
-    pantryAdapter = new PantryAdapter(findViewById(R.id.root_view), this, storage);
     pantryListView.setAdapter(pantryAdapter);
   }
 

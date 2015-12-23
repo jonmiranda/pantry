@@ -38,11 +38,11 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
   private static final int ADD_ITEM_VIEW_TYPE = 0;
   private static final int ITEM_VIEW_TYPE = 1;
 
-  private final View rootView;
+  private final RecyclerView rootView;
   private final PantryItemListener listener;
   private final Storage storage;
 
-  public PantryAdapter(View rootView, PantryItemListener listener, Storage storage) {
+  public PantryAdapter(RecyclerView rootView, PantryItemListener listener, Storage storage) {
     this.rootView = rootView;
     this.listener = listener;
     this.storage = storage;
@@ -87,7 +87,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
     }
 
     public abstract void onBind(
-        View rootView,
+        RecyclerView rootView,
         PantryAdapter pantryAdapter,
         Storage storage,
         PantryItemListener listener,
@@ -124,7 +124,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
 
     @Override
     public void onBind(
-        View rootView,
+        final RecyclerView rootView,
         final PantryAdapter pantryAdapter,
         final Storage storage,
         PantryItemListener unused,
@@ -156,6 +156,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
               pantryAdapter.notifyDataSetChanged();
               input.setText("");
               input.setError(null);
+              rootView.scrollToPosition(pantryAdapter.getItemCount() - 1);
             }
           });
     }
@@ -182,7 +183,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
     }
 
     public void onBind(
-        final View rootView,
+        final RecyclerView rootView,
         final PantryAdapter adapter,
         final Storage storage,
         final PantryItemListener listener,
