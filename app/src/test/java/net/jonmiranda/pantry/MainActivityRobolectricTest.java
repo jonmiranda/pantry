@@ -205,6 +205,24 @@ public class MainActivityRobolectricTest {
     assertEquals("Apples", items.get(1));
   }
 
+  @Test
+  public void testEditingItemName() {
+    addItem(
+        "Apples",
+        (TextView) activity.findViewById(R.id.add_item_input),
+        activity.findViewById(R.id.add_item_submit));
+
+    RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    View itemView = getItemFromList(itemList, 0);
+    TextView itemName = (TextView) itemView.findViewById(R.id.item_name);
+
+    assertEquals(null, storage.getItemWithName("Bananas"));
+
+    itemName.setText("Bananas");
+
+    assertTrue(storage.getItemWithName("Bananas") != null);
+  }
+
   private static View getItemFromList(RecyclerView list, int position) {
     list.measure(0, 0);
     list.layout(0, 0, 100, 1000);

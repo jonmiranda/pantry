@@ -59,8 +59,9 @@ public class RealmStorage implements Storage {
     }
   }
 
-  public void updateItem(PantryItem item, boolean inStock, Date purchased) {
+  public void updateItem(PantryItem item, String itemName, boolean inStock, Date purchased) {
     realm.beginTransaction();
+    item.setName(itemName);
     item.setInStock(inStock);
     item.setPurchased(purchased);
     realm.commitTransaction();

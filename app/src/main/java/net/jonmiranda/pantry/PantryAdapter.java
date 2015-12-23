@@ -12,11 +12,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
+import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+
 import net.jonmiranda.pantry.storage.PantryItem;
 import net.jonmiranda.pantry.storage.Storage;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import rx.functions.Action1;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
 
@@ -80,6 +86,15 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
         final Storage storage,
         final PantryItem item,
         final PantryAdapter adapter) {
+      RxTextView.afterTextChangeEvents(name)
+          .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindToLifecycle())
+              .subscribe(new Action1<TextViewAfterTextChangeEvent>() {
+                @Override
+                public void call(TextViewAfterTextChangeEvent event) {
+                  String itemName = event.editable().toString();
+                  storage.updateItem(item, itemName, item.isInStock(), item.getPurchased());
+                }
+              });
       more.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -110,7 +125,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
                 @Override
                 public void onClick(View unused) {
                   Date undoPurchased = item.getPurchased();
-                  storage.updateItem(item, !checkbox.isChecked(), undoPurchased);
+                  storage.updateItem(item, item.getName(), !checkbox.isChecked(), undoPurchased);
                   adapter.notifyDataSetChanged();
                 }
               })
@@ -120,7 +135,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
           if (checkbox.isChecked()) {
             purchased = Utils.getTodaysDate();
           }
-          storage.updateItem(item, checkbox.isChecked(), purchased);
+          storage.updateItem(item, item.getName(), checkbox.isChecked(), purchased);
           adapter.notifyDataSetChanged();
         }
       });

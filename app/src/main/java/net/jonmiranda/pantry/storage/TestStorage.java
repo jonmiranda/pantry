@@ -55,7 +55,9 @@ public class TestStorage implements Storage {
     }
   }
 
-  public void updateItem(PantryItem item, boolean inStock, Date purchased) {
+
+  public void updateItem(PantryItem item, String itemName, boolean inStock, Date purchased) {
+    item.setName(itemName);
     item.setInStock(inStock);
     item.setPurchased(purchased);
   }
