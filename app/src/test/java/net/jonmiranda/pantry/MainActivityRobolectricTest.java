@@ -19,7 +19,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAlertDialog;
-import org.robolectric.shadows.ShadowView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,8 +163,10 @@ public class MainActivityRobolectricTest {
         activity.findViewById(R.id.add_item_submit));
 
     View itemView = getItemFromList(itemList, 0);
+    View itemName = itemView.findViewById(R.id.item_name);
     View more = itemView.findViewById(R.id.item_more);
-    ShadowView.clickOn(more);
+    itemName.requestFocus(); // focus the view so the more button appears
+    more.performClick(); // ShadowView.clickOn(more); not working :(
 
     List<Dialog> dialogs = ShadowAlertDialog.getShownDialogs();
     assertEquals(dialogs.size(), 1);

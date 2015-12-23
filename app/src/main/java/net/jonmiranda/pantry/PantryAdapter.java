@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -88,13 +89,21 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
         final PantryAdapter adapter) {
       RxTextView.afterTextChangeEvents(name)
           .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindToLifecycle())
-              .subscribe(new Action1<TextViewAfterTextChangeEvent>() {
-                @Override
-                public void call(TextViewAfterTextChangeEvent event) {
-                  String itemName = event.editable().toString();
-                  storage.updateItem(item, itemName, item.isInStock(), item.getPurchased());
-                }
-              });
+          .subscribe(new Action1<TextViewAfterTextChangeEvent>() {
+            @Override
+            public void call(TextViewAfterTextChangeEvent event) {
+              String itemName = event.editable().toString();
+              storage.updateItem(item, itemName, item.isInStock(), item.getPurchased());
+            }
+          });
+      RxView.focusChanges(name)
+          .compose(((RxAppCompatActivity) context).<Boolean>bindToLifecycle())
+          .subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean isFocused) {
+              more.setVisibility(isFocused ? View.VISIBLE : View.GONE);
+            }
+          });
       more.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {

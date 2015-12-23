@@ -28,5 +28,6 @@
         android:paddingStart="@dimen/full_spacer"
         android:paddingEnd="@dimen/full_spacer"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:src="@drawable/ic_more_vert_black_24dp"/>
 </LinearLayout>
