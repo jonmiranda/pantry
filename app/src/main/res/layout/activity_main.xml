@@ -1,4 +1,5 @@
 <FrameLayout
+    android:id="@+id/root_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -36,51 +37,6 @@
             android:id="@+id/pantry_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="?attr/actionBarSize"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     </android.support.design.widget.CoordinatorLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:orientation="vertical">
-
-        <!-- TODO: Fab gets clipped when SnackBar is shown. -->
-        <android.support.design.widget.CoordinatorLayout
-            android:id="@+id/fab_coordinator"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="@dimen/full_spacer"/>
-        </android.support.design.widget.CoordinatorLayout>
-
-        <LinearLayout
-            android:id="@+id/add_item_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="horizontal"
-            android:background="@android:color/white"
-            tools:background="#00FF00"
-            tools:visibility="visible">
-            <EditText
-                android:id="@+id/add_item_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="textCapWords"
-                android:hint="@string/add_item_input_hint"/>
-            <Button
-                android:id="@+id/add_item_submit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:text="@string/add_item_button_text"/>
-        </LinearLayout>
-    </LinearLayout>
 </FrameLayout>

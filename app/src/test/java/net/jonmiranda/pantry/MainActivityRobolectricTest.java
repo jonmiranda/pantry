@@ -46,38 +46,22 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testLayout() {
-    View fab = activity.findViewById(R.id.fab);
-    View listView = activity.findViewById(R.id.pantry_list_view);
-    View addItemView = activity.findViewById(R.id.add_item_view);
+    RecyclerView listView = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    View addItemView = getItemFromList(listView, 0);
     View addItemSubmit = activity.findViewById(R.id.add_item_submit);
 
-    assertEquals(fab.getVisibility(), View.VISIBLE);
     assertEquals(listView.getVisibility(), View.VISIBLE);
-    assertEquals(addItemView.getVisibility(), View.GONE);
+    assertEquals(addItemView.getVisibility(), View.VISIBLE);
     assertFalse(addItemSubmit.isEnabled());
   }
 
   @Test
-  public void testClickingFabTogglesAddItemViewVisibility() {
-    View fab = activity.findViewById(R.id.fab);
-    View addItemView = activity.findViewById(R.id.add_item_view);
-
-    fab.performClick();
-
-    assertEquals(addItemView.getVisibility(), View.VISIBLE);
-
-    fab.performClick();
-
-    assertEquals(addItemView.getVisibility(), View.GONE);
-  }
-
-  @Test
   public void testErrorWhenTypingItemThatAlreadyExists() {
-    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
+    TextView itemInput = getItemInput();
     View submitItemButton = activity.findViewById(R.id.add_item_submit);
 
-    addItem("Apples", itemInput, submitItemButton);
-    setItemInputAndWait(itemInput, "Apples");
+    addItem("Apples");
+    setItemInputAndWait("Apples");
 
     assertEquals(itemInput.getError(), "Item already exists in Pantry.");
     assertFalse(submitItemButton.isEnabled());
@@ -85,52 +69,42 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testSubmitEnabledDisabledCases() throws Exception {
-    View submitItemButton = activity.findViewById(R.id.add_item_submit);
-    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
+    View submitItemButton = getItemSubmit();
 
-    setItemInputAndWait(itemInput, "Apples");
+    setItemInputAndWait("Apples");
     assertTrue(submitItemButton.isEnabled());
     submitItemButton.performClick();
 
-    setItemInputAndWait(itemInput, "");
+    setItemInputAndWait("");
     assertFalse(submitItemButton.isEnabled());
 
-    setItemInputAndWait(itemInput, "Apples");
+    setItemInputAndWait("Apples");
     assertFalse(submitItemButton.isEnabled());
   }
 
   @Test
   public void testAddingItemUpdatesStorage() {
-    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
-    View submitItemButton = activity.findViewById(R.id.add_item_submit);
-
     List<PantryItem> items = storage.getItems();
-
     assertTrue(items.isEmpty());
 
-    addItem("Apples", itemInput, submitItemButton);
+    addItem("Apples");
 
-    assertTrue(itemInput.getText().toString().isEmpty());
+    assertTrue(getItemInput().getText().toString().isEmpty());
     assertTrue(items.size() == 1);
   }
 
   @Test
   public void testAddingItemUpdatesUI() {
+    addItem("Apples");
+
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
-    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
-
-    addItem(
-        "Apples",
-        itemInput,
-        activity.findViewById(R.id.add_item_submit));
-
     View itemView = getItemFromList(itemList, 0);
     CheckBox checkBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
     EditText item = (EditText) itemView.findViewById(R.id.item_name);
     TextView purchased = (TextView) itemView.findViewById(R.id.item_purchased);
 
-    assertTrue(itemInput.getText().equals(""));
-    assertTrue(itemInput.getError() == null);
+    assertTrue(getItemInput().getText().equals(""));
+    assertTrue(getItemInput().getError() == null);
     assertTrue(item.getText().equals("Apples"));
     assertTrue(checkBox.isChecked());
     assertTrue(purchased.getText().equals("Today"));
@@ -138,13 +112,9 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testUncheckingItemMarksItAsOutOfStock() {
+    addItem("Apples");
+
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
-
-    addItem(
-        "Apples",
-        (TextView) activity.findViewById(R.id.add_item_input),
-        activity.findViewById(R.id.add_item_submit));
-
     View itemView = getItemFromList(itemList, 0);
     CheckBox checkBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
     checkBox.performClick();
@@ -155,13 +125,9 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testClickingMoreOpensDialog() {
+    addItem("Apples");
+
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
-
-    addItem(
-        "Apples",
-        (TextView) activity.findViewById(R.id.add_item_input),
-        activity.findViewById(R.id.add_item_submit));
-
     View itemView = getItemFromList(itemList, 0);
     View itemName = itemView.findViewById(R.id.item_name);
     View more = itemView.findViewById(R.id.item_more);
@@ -184,22 +150,26 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testAddItemInputObservable() throws Exception {
-    TextView itemInput = (TextView) activity.findViewById(R.id.add_item_input);
     final List<String> items = new ArrayList<>();
 
-    activity.getAddItemInputObservable().subscribe(new Action1<String>() {
-      @Override
-      public void call(String item) {
-        items.add(item);
-      }
-    });
+    RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    View addItemView = getItemFromList(itemList, 0);
+    ((PantryAdapter.PantryAddItemViewHolder) addItemView.getTag())
+        .getAddItemInputObservable(activity)
+        .subscribe(new Action1<String>() {
+          @Override
+          public void call(String item) {
+            items.add(item);
+          }
+        });
 
+    TextView itemInput = getItemInput();
     itemInput.setText("A");
     itemInput.setText("Ap");
-    setItemInputAndWait(itemInput, "App"); // Stimulates the Observable
+    setItemInputAndWait("App"); // Stimulates the Observable
     itemInput.setText("Appl");
     itemInput.setText("Apple");
-    setItemInputAndWait(itemInput, "Apples"); // Stimulates the Observable
+    setItemInputAndWait("Apples"); // Stimulates the Observable
 
     assertEquals(2, items.size());
     assertEquals("App", items.get(0));
@@ -208,10 +178,7 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testEditingItemName() {
-    addItem(
-        "Apples",
-        (TextView) activity.findViewById(R.id.add_item_input),
-        activity.findViewById(R.id.add_item_submit));
+    addItem("Apples");
 
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
     View itemView = getItemFromList(itemList, 0);
@@ -224,20 +191,31 @@ public class MainActivityRobolectricTest {
     assertTrue(storage.getItemWithName("Bananas") != null);
   }
 
+  private TextView getItemInput() {
+    RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    View itemView = getItemFromList(itemList, itemList.getAdapter().getItemCount() - 1);
+    return (TextView) itemView.findViewById(R.id.add_item_input);
+  }
+
+  private View getItemSubmit() {
+    RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    View itemView = getItemFromList(itemList, itemList.getAdapter().getItemCount() - 1);
+    return itemView.findViewById(R.id.add_item_submit);
+  }
+
+  private void addItem(String name) {
+    getItemInput().setText(name);
+    getItemSubmit().performClick();
+  }
+
+  private void setItemInputAndWait(String input) {
+    getItemInput().setText(input);
+    Robolectric.flushForegroundThreadScheduler();
+  }
+
   private static View getItemFromList(RecyclerView list, int position) {
     list.measure(0, 0);
     list.layout(0, 0, 100, 1000);
     return list.getChildAt(position);
-  }
-
-  private static void addItem(String name, TextView input, View submit) {
-    input.setText(name);
-    submit.performClick();
-  }
-
-
-  private static void setItemInputAndWait(TextView itemInput, String input) {
-    itemInput.setText(input);
-    Robolectric.flushForegroundThreadScheduler();
   }
 }
