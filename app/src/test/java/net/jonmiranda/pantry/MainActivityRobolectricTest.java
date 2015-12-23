@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import net.jonmiranda.pantry.dagger.TestModule;
@@ -125,13 +126,14 @@ public class MainActivityRobolectricTest {
         activity.findViewById(R.id.add_item_submit));
 
     View itemView = getItemFromList(itemList, 0);
-    CheckBox item = (CheckBox) itemView.findViewById(R.id.item_name);
+    CheckBox checkBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
+    EditText item = (EditText) itemView.findViewById(R.id.item_name);
     TextView purchased = (TextView) itemView.findViewById(R.id.item_purchased);
 
     assertTrue(itemInput.getText().equals(""));
     assertTrue(itemInput.getError() == null);
     assertTrue(item.getText().equals("Apples"));
-    assertTrue(item.isChecked());
+    assertTrue(checkBox.isChecked());
     assertTrue(purchased.getText().equals("Today"));
   }
 
@@ -145,10 +147,10 @@ public class MainActivityRobolectricTest {
         activity.findViewById(R.id.add_item_submit));
 
     View itemView = getItemFromList(itemList, 0);
-    CheckBox item = (CheckBox) itemView.findViewById(R.id.item_name);
-    item.performClick();
+    CheckBox checkBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
+    checkBox.performClick();
 
-    assertFalse(item.isChecked());
+    assertFalse(checkBox.isChecked());
     assertFalse(storage.getItems().get(0).isInStock());
   }
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import net.jonmiranda.pantry.storage.PantryItem;
@@ -43,7 +44,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
     PantryItem item = storage.getItems().get(position);
     holder.name.setText(item.getName());
 
-    holder.name.setChecked(item.isInStock());
+    holder.checkbox.setChecked(item.isInStock());
     holder.setOnClickListener(fabCoordinator, context, listener, storage, item, this);
 
     Calendar endTime = Calendar.getInstance();
@@ -59,13 +60,15 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
   }
 
   static class PantryItemViewHolder extends RecyclerView.ViewHolder {
-    protected CheckBox name;
+    protected CheckBox checkbox;
+    protected EditText name;
     protected TextView purchased;
     protected View more;
 
     public PantryItemViewHolder(View view) {
       super(view);
-      name = (CheckBox) view.findViewById(R.id.item_name);
+      checkbox = (CheckBox) view.findViewById(R.id.item_checkbox);
+      name = (EditText) view.findViewById(R.id.item_name);
       purchased = (TextView) view.findViewById(R.id.item_purchased);
       more = view.findViewById(R.id.item_more);
     }
@@ -95,10 +98,10 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
               .show();
         }
       });
-      name.setOnClickListener(new View.OnClickListener() {
+      checkbox.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          int messageResource = name.isChecked()
+          int messageResource = checkbox.isChecked()
               ? R.string.item_in_stock
               : R.string.item_out_of_stock;
           Snackbar
@@ -107,17 +110,17 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
                 @Override
                 public void onClick(View unused) {
                   Date undoPurchased = item.getPurchased();
-                  storage.updateItem(item, !name.isChecked(), undoPurchased);
+                  storage.updateItem(item, !checkbox.isChecked(), undoPurchased);
                   adapter.notifyDataSetChanged();
                 }
               })
               .show();
 
           Date purchased = item.getPurchased();
-          if (name.isChecked()) {
+          if (checkbox.isChecked()) {
             purchased = Utils.getTodaysDate();
           }
-          storage.updateItem(item, name.isChecked(), purchased);
+          storage.updateItem(item, checkbox.isChecked(), purchased);
           adapter.notifyDataSetChanged();
         }
       });
