@@ -135,6 +135,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
 
       final Context context = rootView.getContext();
       inputSubscription = getAddItemInputObservable(context)
+          .compose(((RxAppCompatActivity) context).<String>bindToLifecycle())
           .subscribe(new Action1<String>() {
             @Override
             public void call(String itemName) {
@@ -148,6 +149,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
           });
 
       RxView.clicks(submit)
+          .compose(((RxAppCompatActivity) context).<Void>bindToLifecycle())
           .subscribe(new Action1<Void>() {
             @Override
             public void call(Void unused) {
