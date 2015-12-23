@@ -17,16 +17,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:inputType="textCapWords"
         tools:text="Apples"/>
     <TextView
         android:id="@+id/item_purchased"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/full_spacer"
+        android:paddingRight="@dimen/full_spacer" />
     <ImageView
         android:id="@+id/item_more"
         android:layout_width="wrap_content"
-        android:paddingStart="@dimen/full_spacer"
         android:paddingEnd="@dimen/full_spacer"
+        android:paddingRight="@dimen/full_spacer"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:src="@drawable/ic_more_vert_black_24dp"/>
