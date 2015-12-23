@@ -23,6 +23,7 @@ import net.jonmiranda.pantry.storage.Storage;
 import java.util.Calendar;
 import java.util.Date;
 
+import rx.Subscription;
 import rx.functions.Action1;
 
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItemViewHolder> {
@@ -47,16 +48,38 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
   }
 
   @Override
-  public void onBindViewHolder(PantryItemViewHolder holder, int position) {
-    PantryItem item = storage.getItems().get(position);
+  public void onBindViewHolder(final PantryItemViewHolder holder, int position) {
+    final PantryItem item = storage.getItems().get(position);
+    if (holder.textSubscription != null) {
+      holder.textSubscription.unsubscribe();
+    }
     holder.name.setText(item.getName());
+    holder.textSubscription = RxTextView.afterTextChangeEvents(holder.name)
+        .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindToLifecycle())
+        .subscribe(new Action1<TextViewAfterTextChangeEvent>() {
+          @Override
+          public void call(TextViewAfterTextChangeEvent event) {
+            String itemName = event.editable().toString();
+            storage.updateItem(item, itemName, item.isInStock(), item.getPurchased());
+          }
+        });
 
+    if (holder.focusSubscription != null) {
+      holder.focusSubscription.unsubscribe();
+    }
+    holder.focusSubscription = RxView.focusChanges(holder.name)
+        .compose(((RxAppCompatActivity) context).<Boolean>bindToLifecycle())
+        .subscribe(new Action1<Boolean>() {
+          @Override
+          public void call(Boolean isFocused) {
+            holder.more.setVisibility(isFocused ? View.VISIBLE : View.GONE);
+          }
+        });
     holder.checkbox.setChecked(item.isInStock());
     holder.setOnClickListener(fabCoordinator, context, listener, storage, item, this);
 
     Calendar endTime = Calendar.getInstance();
-    Date startTime =
-        (Date) Utils.firstNonNull(item.getPurchased(), endTime);
+    Date startTime = (Date) Utils.firstNonNull(item.getPurchased(), endTime);
     holder.purchased.setText(
         Utils.getDisplayableTime(endTime.getTimeInMillis() - startTime.getTime()));
   }
@@ -67,6 +90,8 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
   }
 
   static class PantryItemViewHolder extends RecyclerView.ViewHolder {
+    protected Subscription focusSubscription;
+    protected Subscription textSubscription;
     protected CheckBox checkbox;
     protected EditText name;
     protected TextView purchased;
@@ -87,23 +112,6 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryItem
         final Storage storage,
         final PantryItem item,
         final PantryAdapter adapter) {
-      RxTextView.afterTextChangeEvents(name)
-          .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindToLifecycle())
-          .subscribe(new Action1<TextViewAfterTextChangeEvent>() {
-            @Override
-            public void call(TextViewAfterTextChangeEvent event) {
-              String itemName = event.editable().toString();
-              storage.updateItem(item, itemName, item.isInStock(), item.getPurchased());
-            }
-          });
-      RxView.focusChanges(name)
-          .compose(((RxAppCompatActivity) context).<Boolean>bindToLifecycle())
-          .subscribe(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean isFocused) {
-              more.setVisibility(isFocused ? View.VISIBLE : View.GONE);
-            }
-          });
       more.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
