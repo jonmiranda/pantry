@@ -3,34 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
     android:paddingLeft="@dimen/full_spacer"
     android:paddingTop="@dimen/full_spacer"
     android:paddingRight="0dp"
-    android:paddingBottom="@dimen/full_spacer">
-    <CheckBox
-        android:id="@+id/item_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <EditText
-        android:id="@+id/item_name"
-        android:layout_width="0dp"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="textCapWords"
-        tools:text="Apples"/>
-    <TextView
-        android:id="@+id/item_purchased"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/full_spacer"
-        android:paddingRight="@dimen/full_spacer" />
-    <ImageView
-        android:id="@+id/item_more"
-        android:layout_width="wrap_content"
-        android:paddingEnd="@dimen/full_spacer"
-        android:paddingRight="@dimen/full_spacer"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:src="@drawable/ic_more_vert_black_24dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/full_spacer">
+        <CheckBox
+            android:id="@+id/item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textCapWords"
+            android:background="@android:color/transparent"
+            tools:text="Apples"/>
+        <TextView
+            android:id="@+id/item_purchased"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/full_spacer"
+            android:paddingRight="@dimen/full_spacer"/>
+        <ImageView
+            android:id="@+id/item_more"
+            android:layout_width="wrap_content"
+            android:paddingEnd="@dimen/full_spacer"
+            android:paddingRight="@dimen/full_spacer"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:src="@drawable/ic_more_vert_black_24dp"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        android:paddingRight="@dimen/full_spacer"/>
 </LinearLayout>

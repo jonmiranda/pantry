@@ -7,6 +7,8 @@
     android:orientation="horizontal"
     android:paddingStart="@dimen/full_spacer"
     android:paddingLeft="@dimen/full_spacer"
+    android:paddingRight="@dimen/full_spacer"
+    android:paddingEnd="@dimen/full_spacer"
     tools:visibility="visible">
     <EditText
         android:id="@+id/add_item_input"

@@ -1,3 +1,4 @@
 <resources>
     <color name="brand_color">#009688</color>
+    <color name="light_gray">#eeeeee</color>
 </resources>
