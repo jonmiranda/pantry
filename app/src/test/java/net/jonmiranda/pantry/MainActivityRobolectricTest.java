@@ -154,6 +154,7 @@ public class MainActivityRobolectricTest {
 
   @Test
   public void testClickingPurchasedOpensDialog() {
+    // TODO: Write test in Espresso.
     // TODO: Blocked by https://github.com/robolectric/robolectric/issues/783
   }
 
