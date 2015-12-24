@@ -66,8 +66,6 @@ public class MainActivity
   public boolean onOptionsItemSelected(MenuItem menuItem) {
     int id = menuItem.getItemId();
     switch (id) {
-      case R.id.action_settings:
-        return true;
       case R.id.delete_realm:
         storage.delete();
         startActivity(new Intent(this, MainActivity.class));
