@@ -1,6 +1,8 @@
 package net.jonmiranda.pantry;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
@@ -19,6 +21,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAlertDialog;
+import org.robolectric.shadows.ShadowView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,23 +127,29 @@ public class MainActivityRobolectricTest {
   }
 
   @Test
-  public void testClickingMoreOpensDialog() {
+  public void testDeletingItem() {
     addItem("Apples");
 
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    assertEquals(2, itemList.getAdapter().getItemCount());
+
     View itemView = getItemFromList(itemList, 0);
     View itemName = itemView.findViewById(R.id.item_name);
-    View more = itemView.findViewById(R.id.item_more);
+    View deleteView = itemView.findViewById(R.id.item_delete);
     itemName.requestFocus(); // focus the view so the more button appears
-    more.performClick(); // ShadowView.clickOn(more); not working :(
+    deleteView.performClick(); // ShadowView.clickOn(more); not working :(
 
     List<Dialog> dialogs = ShadowAlertDialog.getShownDialogs();
-    assertEquals(dialogs.size(), 1);
+    assertEquals(1, dialogs.size());
 
-//    TODO: Figure out how to make the below tests pass.
-//    ShadowAlertDialog confirmationDialog = (ShadowAlertDialog) shadowOf(confirmationDialog);
-//    assertEquals("Confirm Delete", confirmationDialog.getTitle());
-//    assertEquals("Are you sure you want to delete 'Apples'?", confirmationDialog.getMessage());
+    AlertDialog dialog = (AlertDialog) dialogs.get(0);
+    ShadowView.clickOn(dialog.getButton(DialogInterface.BUTTON_POSITIVE));
+
+    assertEquals(1, itemList.getAdapter().getItemCount());
+
+    //    TODO: Figure out how to make the below tests pass.
+    //    assertEquals("Confirm Delete", confirmationDialog.getTitle());
+    //    assertEquals("Are you sure you want to delete 'Apples'?", confirmationDialog.getMessage());
   }
 
   @Test
