@@ -32,13 +32,14 @@
             android:paddingEnd="@dimen/full_spacer"
             android:paddingRight="@dimen/full_spacer"/>
         <ImageView
-            android:id="@+id/item_more"
+            android:id="@+id/item_delete"
             android:layout_width="wrap_content"
             android:paddingEnd="@dimen/full_spacer"
             android:paddingRight="@dimen/full_spacer"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:src="@drawable/ic_more_vert_black_24dp"/>
+            tools:visibility="visible"
+            android:src="@drawable/ic_close_black_24dp"/>
     </LinearLayout>
     <View
         android:layout_width="match_parent"

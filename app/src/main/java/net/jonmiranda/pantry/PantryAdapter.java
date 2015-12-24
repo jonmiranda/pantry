@@ -174,14 +174,14 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
     protected CheckBox checkbox;
     protected EditText name;
     protected TextView purchased;
-    protected View more;
+    protected View delete;
 
     public PantryItemViewHolder(View view) {
       super(view);
       checkbox = (CheckBox) view.findViewById(R.id.item_checkbox);
       name = (EditText) view.findViewById(R.id.item_name);
       purchased = (TextView) view.findViewById(R.id.item_purchased);
-      more = view.findViewById(R.id.item_more);
+      delete = view.findViewById(R.id.item_delete);
     }
 
     public void onBind(
@@ -214,7 +214,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
           .subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean isFocused) {
-              more.setVisibility(isFocused ? View.VISIBLE : View.GONE);
+              delete.setVisibility(isFocused ? View.VISIBLE : View.GONE);
             }
           });
       checkbox.setChecked(item.isInStock());
@@ -233,7 +233,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
         final PantryItem item,
         final PantryAdapter adapter) {
       final Context context = rootView.getContext();
-      more.setOnClickListener(new View.OnClickListener() {
+      delete.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           new AlertDialog.Builder(context)
@@ -254,11 +254,14 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
       checkbox.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          int messageResource = checkbox.isChecked()
+          int messageResourceId = checkbox.isChecked()
               ? R.string.item_in_stock
               : R.string.item_out_of_stock;
           Snackbar
-              .make(rootView, messageResource, Snackbar.LENGTH_SHORT)
+              .make(
+                  rootView,
+                  context.getString(messageResourceId, item.getName()),
+                  Snackbar.LENGTH_SHORT)
               .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View unused) {
