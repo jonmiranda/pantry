@@ -24,6 +24,15 @@ android {
     }
 
     useLibrary 'org.apache.http.legacy'
+
+    productFlavors {
+        production {
+            applicationId "net.jonmiranda.pantry"
+        }
+        staging {
+            applicationId "net.jonmiranda.pantry.debug"
+        }
+    }
 }
 
 dependencies {
