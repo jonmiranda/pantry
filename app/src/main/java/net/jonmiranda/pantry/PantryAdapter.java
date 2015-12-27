@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import net.jonmiranda.pantry.storage.PantryItem;
@@ -111,7 +112,6 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
     @VisibleForTesting
     Observable<String> getAddItemInputObservable(Context context) {
       return RxTextView.afterTextChangeEvents(input)
-          .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindToLifecycle())
           .observeOn(AndroidSchedulers.mainThread())
           .map(new Func1<TextViewAfterTextChangeEvent, String>() {
             @Override
@@ -135,7 +135,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
 
       final Context context = rootView.getContext();
       inputSubscription = getAddItemInputObservable(context)
-          .compose(((RxAppCompatActivity) context).<String>bindToLifecycle())
+          .compose(((RxAppCompatActivity) context).<String>bindUntilEvent(ActivityEvent.DESTROY))
           .subscribe(new Action1<String>() {
             @Override
             public void call(String itemName) {

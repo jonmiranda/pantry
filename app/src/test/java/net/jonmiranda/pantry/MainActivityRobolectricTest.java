@@ -22,6 +22,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowView;
+import org.robolectric.util.ActivityController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, manifest = "app/src/main/AndroidManifest.xml", sdk = 19)
 public class MainActivityRobolectricTest {
+  private ActivityController<MainActivity> activityController;
   private MainActivity activity;
   private Storage storage;
 
@@ -43,7 +45,9 @@ public class MainActivityRobolectricTest {
   public void setUp() {
     PantryApplication application = (PantryApplication) RuntimeEnvironment.application;
     application.objectGraph = ObjectGraph.create(new TestModule(application));
-    activity = Robolectric.setupActivity(MainActivity.class);
+    activityController =
+        Robolectric.buildActivity(MainActivity.class).create().start().resume().visible();
+    activity = activityController.get();
     storage = activity.storage;
   }
 
@@ -156,6 +160,21 @@ public class MainActivityRobolectricTest {
   public void testClickingPurchasedOpensDialog() {
     // TODO: Write test in Espresso.
     // TODO: Blocked by https://github.com/robolectric/robolectric/issues/783
+  }
+
+  @Test
+  public void testAddItemInputObservableLifecycle() throws Exception {
+    View submitItemButton = getItemSubmit();
+
+    setItemInputAndWait("Apples");
+    assertTrue(submitItemButton.isEnabled());
+    setItemInputAndWait("");
+
+    activityController.pause();
+    activityController.resume();
+
+    setItemInputAndWait("Apples");
+    assertTrue(submitItemButton.isEnabled());
   }
 
   @Test
