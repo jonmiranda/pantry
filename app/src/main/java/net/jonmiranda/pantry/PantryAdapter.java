@@ -149,7 +149,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
           });
 
       RxView.clicks(submit)
-          .compose(((RxAppCompatActivity) context).<Void>bindToLifecycle())
+          .compose(((RxAppCompatActivity) context).<Void>bindUntilEvent(ActivityEvent.DESTROY))
           .subscribe(new Action1<Void>() {
             @Override
             public void call(Void unused) {
@@ -200,7 +200,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
 
       name.setText(item.getName());
       textSubscription = RxTextView.afterTextChangeEvents(name)
-          .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindToLifecycle())
+          .compose(((RxAppCompatActivity) context).<TextViewAfterTextChangeEvent>bindUntilEvent(ActivityEvent.DESTROY))
           .subscribe(new Action1<TextViewAfterTextChangeEvent>() {
             @Override
             public void call(TextViewAfterTextChangeEvent event) {
@@ -210,7 +210,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
           });
 
       focusSubscription = RxView.focusChanges(name)
-          .compose(((RxAppCompatActivity) context).<Boolean>bindToLifecycle())
+          .compose(((RxAppCompatActivity) context).<Boolean>bindUntilEvent(ActivityEvent.DESTROY))
           .subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean isFocused) {
