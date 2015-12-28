@@ -50,15 +50,6 @@ public class RealmStorage implements Storage {
     return realm.allObjects(PantryItem.class).where().equalTo("name", name).findFirst();
   }
 
-  public void setItemPurchased(String itemName, Date purchased) {
-    PantryItem item = getItemWithName(itemName);
-    if (item != null) {
-      realm.beginTransaction();
-      item.setPurchased(purchased);
-      realm.commitTransaction();
-    }
-  }
-
   public void updateItem(PantryItem item, String itemName, boolean inStock, Date purchased) {
     realm.beginTransaction();
     item.setName(itemName);

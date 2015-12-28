@@ -1,5 +1,7 @@
 package net.jonmiranda.pantry;
 
+import net.jonmiranda.pantry.storage.PantryItem;
+
 public interface PantryItemListener {
-  void onItemPurchaseClicked(String itemName);
+  void onItemPurchaseClicked(PantryItem item);
 }

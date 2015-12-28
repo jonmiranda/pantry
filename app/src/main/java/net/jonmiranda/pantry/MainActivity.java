@@ -32,7 +32,7 @@ public class MainActivity
 
   private PantryAdapter pantryAdapter;
 
-  private String lastSelectedItemName;
+  private PantryItem lastSelectedItem;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -85,18 +85,21 @@ public class MainActivity
 
   @Override
   public void onDateSet(DatePicker unused, int year, int monthOfYear, int dayOfMonth) {
-    if (lastSelectedItemName != null) {
+    if (lastSelectedItem != null) {
       Calendar newDate = Calendar.getInstance();
       newDate.set(year, monthOfYear, dayOfMonth);
-      storage.setItemPurchased(lastSelectedItemName, newDate.getTime());
+      storage.updateItem(
+          lastSelectedItem,
+          lastSelectedItem.getName(),
+          lastSelectedItem.isInStock(),
+          newDate.getTime());
       pantryAdapter.notifyDataSetChanged();
     }
   }
 
   @Override
-  public void onItemPurchaseClicked(String itemName) {
-    lastSelectedItemName = itemName;
-    PantryItem item = storage.getItemWithName(itemName);
+  public void onItemPurchaseClicked(PantryItem item) {
+    lastSelectedItem = item;
     DatePickerFragment datePickerFragment =
         DatePickerFragment.newInstance(item.getPurchased().getTime());
     datePickerFragment.setCancelable(true);

@@ -283,7 +283,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
       purchased.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          listener.onItemPurchaseClicked(item.getName());
+          listener.onItemPurchaseClicked(item);
         }
       });
     }

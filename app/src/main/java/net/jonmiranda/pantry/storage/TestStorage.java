@@ -48,14 +48,6 @@ public class TestStorage implements Storage {
     return null;
   }
 
-  public void setItemPurchased(String itemName, Date purchased) {
-    PantryItem item = getItemWithName(itemName);
-    if (item != null) {
-      item.setPurchased(purchased);
-    }
-  }
-
-
   public void updateItem(PantryItem item, String itemName, boolean inStock, Date purchased) {
     item.setName(itemName);
     item.setInStock(inStock);
