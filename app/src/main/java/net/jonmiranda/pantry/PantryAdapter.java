@@ -141,7 +141,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
             public void call(String itemName) {
               boolean enableSubmit = !itemName.isEmpty();
               if (storage.itemWithNameExists(itemName)) {
-                input.setError(context.getString(R.string.item_already_exists));
+                input.setError(context.getString(R.string.item_already_exists, itemName));
                 enableSubmit = false;
               }
               submit.setEnabled(enableSubmit);
