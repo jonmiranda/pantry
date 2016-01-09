@@ -70,7 +70,7 @@ public class MainActivityRobolectricTest {
     addItem("Apples");
     setItemInputAndWait("Apples");
 
-    assertEquals(itemInput.getError(), "Item already exists in Pantry.");
+    assertEquals(itemInput.getError(), "'Apples' already exists in Pantry.");
     assertFalse(submitItemButton.isEnabled());
   }
 
