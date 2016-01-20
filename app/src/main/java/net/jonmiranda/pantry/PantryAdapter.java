@@ -24,6 +24,7 @@ import net.jonmiranda.pantry.storage.Storage;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
@@ -62,18 +63,31 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
     }
   }
 
+  // Set it to be between the checked and unchecked items
+  // TODO: Cache this for efficiency
+  private int caclulatePositionOfAddItemViewType() {
+    List<PantryItem> items = storage.getItems();
+    for (int position = 0; position < items.size(); ++position) {
+      if (!items.get(position).isInStock()) {
+        return position;
+      }
+    }
+    return getItemCount() - 1;
+  }
+
   @Override
   public int getItemViewType(int position) {
-    return position == getItemCount() - 1
+    return position == caclulatePositionOfAddItemViewType()
         ? ADD_ITEM_VIEW_TYPE
         : ITEM_VIEW_TYPE;
   }
 
   @Override
   public void onBindViewHolder(final BasePantryItemViewHolder holder, int position) {
-    final PantryItem item = position >= getItemCount() - ITEM_COUNT_OFFSET
+    int addItemViewTypePosition = caclulatePositionOfAddItemViewType();
+    final PantryItem item = position == addItemViewTypePosition
         ? null
-        : storage.getItems().get(position);
+        : storage.getItems().get(position >= addItemViewTypePosition ? position - 1 : position);
     holder.onBind(rootView, this, storage, listener, item);
   }
 
@@ -156,9 +170,11 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
               String itemName = sanitizeItemName(input.getText().toString());
               storage.addItem(itemName);
               pantryAdapter.notifyDataSetChanged();
+              rootView.scrollToPosition(pantryAdapter.getItemCount() - 1);
               input.setText("");
               input.setError(null);
-              rootView.scrollToPosition(pantryAdapter.getItemCount() - 1);
+              input.requestFocus();
+              input.requestFocusFromTouch();
             }
           });
     }

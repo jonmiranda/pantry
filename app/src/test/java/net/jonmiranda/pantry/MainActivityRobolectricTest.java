@@ -220,6 +220,39 @@ public class MainActivityRobolectricTest {
     assertTrue(storage.getItemWithName("Bananas") != null);
   }
 
+  @Test
+  public void testAddItemViewPosition() {
+    addItem("Apples");
+    addItem("Bananas");
+
+    RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
+    // addItemView is below all "checked" items
+    View addItemView = getItemFromList(itemList, 2);
+    assertTrue(addItemView.findViewById(R.id.add_item_submit) != null);
+
+    checkItemAtPosition(itemList, 1, false); // uncheck "Bananas"
+
+    // addItemView is between "checked" and "unchecked items"
+    addItemView = getItemFromList(itemList, 1);
+    assertTrue(addItemView.findViewById(R.id.add_item_submit) != null);
+
+    checkItemAtPosition(itemList, 0, false); // uncheck "Apples"
+
+    // addItemView is above all "unchecked items"
+    addItemView = getItemFromList(itemList, 0);
+    assertTrue(addItemView.findViewById(R.id.add_item_submit) != null);
+  }
+
+  public void checkItemAtPosition(RecyclerView itemList, int position, boolean checked) {
+    View itemView = getItemFromList(itemList, position);
+    CheckBox checkBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
+    if (checkBox.isChecked() && !checked) {
+      checkBox.performClick();
+    } else if (!checkBox.isChecked() && checked) {
+      checkBox.performClick();
+    }
+  }
+
   private TextView getItemInput() {
     RecyclerView itemList = (RecyclerView) activity.findViewById(R.id.pantry_list_view);
     View itemView = getItemFromList(itemList, itemList.getAdapter().getItemCount() - 1);
