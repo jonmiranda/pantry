@@ -77,7 +77,7 @@ public class MainActivity
         for (String item : defaultItems) {
           storage.addItem(item);
         }
-        pantryAdapter.notifyDataSetChanged();
+        pantryAdapter.update();
         return true;
     }
     return super.onOptionsItemSelected(menuItem);
@@ -93,7 +93,7 @@ public class MainActivity
           lastSelectedItem.getName(),
           lastSelectedItem.isInStock(),
           newDate.getTime());
-      pantryAdapter.notifyDataSetChanged();
+      pantryAdapter.update();
     }
   }
 

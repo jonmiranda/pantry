@@ -44,10 +44,13 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
   private final PantryItemListener listener;
   private final Storage storage;
 
+  private int positionOfAddItemView;
+
   public PantryAdapter(RecyclerView rootView, PantryItemListener listener, Storage storage) {
     this.rootView = rootView;
     this.listener = listener;
     this.storage = storage;
+    positionOfAddItemView = caclulatePositionOfAddItemView();
   }
 
   @Override
@@ -64,8 +67,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
   }
 
   // Set it to be between the checked and unchecked items
-  // TODO: Cache this for efficiency
-  private int caclulatePositionOfAddItemViewType() {
+  private int caclulatePositionOfAddItemView() {
     List<PantryItem> items = storage.getItems();
     for (int position = 0; position < items.size(); ++position) {
       if (!items.get(position).isInStock()) {
@@ -77,23 +79,27 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
 
   @Override
   public int getItemViewType(int position) {
-    return position == caclulatePositionOfAddItemViewType()
+    return position == positionOfAddItemView
         ? ADD_ITEM_VIEW_TYPE
         : ITEM_VIEW_TYPE;
   }
 
   @Override
   public void onBindViewHolder(final BasePantryItemViewHolder holder, int position) {
-    int addItemViewTypePosition = caclulatePositionOfAddItemViewType();
-    final PantryItem item = position == addItemViewTypePosition
+    final PantryItem item = position == positionOfAddItemView
         ? null
-        : storage.getItems().get(position >= addItemViewTypePosition ? position - 1 : position);
+        : storage.getItems().get(position >= positionOfAddItemView ? position - 1 : position);
     holder.onBind(rootView, this, storage, listener, item);
   }
 
   @Override
   public int getItemCount() {
     return storage.getItems().size() + ITEM_COUNT_OFFSET;
+  }
+
+  public void update() {
+    positionOfAddItemView = caclulatePositionOfAddItemView();
+    notifyDataSetChanged();
   }
 
   static abstract class BasePantryItemViewHolder extends RecyclerView.ViewHolder {
@@ -169,7 +175,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
             public void call(Void unused) {
               String itemName = sanitizeItemName(input.getText().toString());
               storage.addItem(itemName);
-              pantryAdapter.notifyDataSetChanged();
+              pantryAdapter.update();
               rootView.scrollToPosition(pantryAdapter.getItemCount() - 1);
               input.setText("");
               input.setError(null);
@@ -259,7 +265,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                   storage.deleteItem(item);
-                  adapter.notifyDataSetChanged();
+                  adapter.update();
                 }
               })
               .setNegativeButton(context.getString(R.string.cancel), null)
@@ -283,7 +289,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
                 public void onClick(View unused) {
                   Date undoPurchased = item.getPurchased();
                   storage.updateItem(item, item.getName(), !checkbox.isChecked(), undoPurchased);
-                  adapter.notifyDataSetChanged();
+                  adapter.update();
                 }
               })
               .show();
@@ -293,7 +299,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.BasePantry
             purchased = Utils.getTodaysDate();
           }
           storage.updateItem(item, item.getName(), checkbox.isChecked(), purchased);
-          adapter.notifyDataSetChanged();
+          adapter.update();
         }
       });
       purchased.setOnClickListener(new View.OnClickListener() {
